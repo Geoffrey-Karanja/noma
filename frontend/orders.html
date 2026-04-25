@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NOMA – My Orders</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <style>
+    /* ── PAGE HERO ─────────────────────────────────────── */
+    .page-hero {
+      background:    var(--bg2);
+      border-bottom: 1px solid var(--border-cyan);
+      padding:       7rem 0 3rem;
+      position:      relative;
+      overflow:      hidden;
+      box-shadow:    0 0 40px rgba(0,245,255,0.05);
+    }
+    .page-hero::before {
+      content:    '';
+      position:   absolute;
+      inset:      0;
+      background-image:
+        linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .page-hero::after {
+      content:    '';
+      position:   absolute;
+      top: -100px; right: -100px;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle,
+        rgba(0,245,255,0.06), transparent 70%);
+      pointer-events: none;
+    }
+    .page-hero-content { position: relative; z-index: 1; }
+    .page-hero h1 {
+      font-family:    var(--font-display);
+      font-size:      clamp(2.5rem, 5vw, 4rem);
+      font-weight:    900;
+      letter-spacing: -0.03em;
+      margin-bottom:  0.5rem;
+    }
+    .page-hero h1 em {
+      font-style:  italic;
+      color:       var(--cyan);
+      text-shadow: 0 0 30px var(--cyan-glow);
+    }
+    .page-hero p { color: var(--text-sec); font-size: 1rem; }
+
+    /* ── POINTS HERO CARD ──────────────────────────────── */
+    .points-hero {
+      background:    var(--bg2);
+      border:        1px solid rgba(255,190,11,0.25);
+      border-radius: var(--radius-lg);
+      padding:       2.5rem;
+      margin:        2.5rem 0;
+      display:       grid;
+      grid-template-columns: auto 1fr auto;
+      gap:           2rem;
+      align-items:   center;
+      position:      relative;
+      overflow:      hidden;
+      box-shadow:    0 0 50px rgba(255,190,11,0.06);
+    }
+    .points-hero::before {
+      content:    '';
+      position:   absolute;
+      top: -80px; left: -80px;
+      width:      300px; height: 300px;
+      background: radial-gradient(circle,
+        rgba(255,190,11,0.08), transparent 70%);
+      pointer-events: none;
+    }
+    .points-hero::after {
+      content:    '';
+      position:   absolute;
+      bottom: -60px; right: -60px;
+      width:      250px; height: 250px;
+      background: radial-gradient(circle,
+        rgba(255,0,110,0.06), transparent 70%);
+      pointer-events: none;
+    }
+    .points-icon {
+      font-size:     3.5rem;
+      width:         80px; height: 80px;
+      border-radius: 50%;
+      background:    var(--amber-dim);
+      border:        1px solid rgba(255,190,11,0.3);
+      display:       flex;
+      align-items:   center;
+      justify-content: center;
+      box-shadow:    0 0 30px var(--amber-glow);
+      flex-shrink:   0;
+      position:      relative;
+      z-index:       1;
+    }
+    .points-info { position: relative; z-index: 1; }
+    .points-label {
+      font-family:    var(--font-mono);
+      font-size:      0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color:          var(--amber);
+      margin-bottom:  0.4rem;
+    }
+    .points-value {
+      font-family:   var(--font-display);
+      font-size:     3rem;
+      font-weight:   900;
+      color:         var(--amber);
+      text-shadow:   0 0 30px var(--amber-glow);
+      line-height:   1;
+      margin-bottom: 0.5rem;
+    }
+    .points-sub {
+      font-size:   0.82rem;
+      color:       var(--text-sec);
+      display:     flex;
+      align-items: center;
+      gap:         0.75rem;
+    }
+    .streak-pill {
+      background:    rgba(255,107,53,0.12);
+      border:        1px solid rgba(255,107,53,0.25);
+      border-radius: var(--radius-pill);
+      padding:       0.2rem 0.75rem;
+      font-size:     0.72rem;
+      color:         #ff6b35;
+      font-family:   var(--font-mono);
+    }
+    .points-bar-wrap { position: relative; z-index: 1; }
+    .tier-label {
+      display:       flex;
+      justify-content: space-between;
+      font-size:     0.72rem;
+      font-family:   var(--font-mono);
+      color:         var(--text-dim);
+      margin-bottom: 0.4rem;
+    }
+    .tier-label span:last-child { color: var(--amber); }
+    .points-bar-bg {
+      width:         200px; height: 8px;
+      background:    var(--bg3);
+      border-radius: 4px;
+      overflow:      hidden;
+      border:        1px solid var(--border);
+    }
+    .points-bar-fill {
+      height:        100%;
+      border-radius: 4px;
+      background:    linear-gradient(90deg, #ff6b35, var(--amber));
+      box-shadow:    0 0 10px var(--amber-glow);
+      transition:    width 1.2s var(--ease);
+    }
+    .tier-next {
+      font-size:   0.7rem;
+      color:       var(--text-dim);
+      font-family: var(--font-mono);
+      margin-top:  0.4rem;
+    }
+
+    /* ── STATS GRID ────────────────────────────────────── */
+    .stats-grid {
+      display:               grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:                   1.25rem;
+      margin-bottom:         3rem;
+    }
+    .stat-card {
+      background:    var(--bg2);
+      border:        1px solid var(--border);
+      border-radius: var(--radius);
+      padding:       1.5rem;
+      text-align:    center;
+      transition:    all var(--trans);
+      position:      relative;
+      overflow:      hidden;
+    }
+    .stat-card::before {
+      content:    '';
+      position:   absolute;
+      top: 0; left: 0; right: 0;
+      height:     2px;
+      background: linear-gradient(90deg, var(--cyan), var(--magenta));
+      opacity:    0;
+      transition: opacity var(--trans);
+    }
+    .stat-card:hover {
+      border-color: var(--border-cyan);
+      transform:    translateY(-3px);
+      box-shadow:   0 0 25px var(--cyan-glow);
+    }
+    .stat-card:hover::before { opacity: 1; }
+    .stat-icon  { font-size: 1.6rem; margin-bottom: 0.75rem; }
+    .stat-value {
+      font-family:   var(--font-mono);
+      font-size:     1.8rem;
+      font-weight:   700;
+      color:         var(--cyan);
+      text-shadow:   0 0 15px var(--cyan-glow);
+      line-height:   1;
+      margin-bottom: 0.3rem;
+    }
+    .stat-label {
+      font-size:      0.7rem;
+      color:          var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-family:    var(--font-mono);
+    }
+
+    /* ── ORDER CARD ────────────────────────────────────── */
+    .order-card {
+      background:    var(--bg2);
+      border:        1px solid var(--border);
+      border-radius: var(--radius);
+      overflow:      hidden;
+      margin-bottom: 1.25rem;
+      transition:    all var(--trans);
+      animation:     slideUp 0.4s var(--ease) both;
+    }
+    @keyframes slideUp {
+      from { opacity:0; transform:translateY(16px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .order-card:hover {
+      border-color: var(--border-cyan);
+      box-shadow:   0 0 25px rgba(0,245,255,0.06);
+    }
+    .order-card.expanded {
+      border-color: var(--border-cyan);
+      box-shadow:   0 0 30px rgba(0,245,255,0.1);
+    }
+
+    .order-header {
+      display:     flex;
+      align-items: center;
+      gap:         1.25rem;
+      padding:     1.5rem;
+      cursor:      pointer;
+      transition:  background var(--trans);
+    }
+    .order-header:hover { background: var(--bg3); }
+
+    .order-rest-img {
+      width:         60px; height: 60px;
+      border-radius: var(--radius-sm);
+      object-fit:    cover;
+      border:        1px solid var(--border-cyan);
+      box-shadow:    0 0 10px rgba(0,245,255,0.1);
+      flex-shrink:   0;
+    }
+
+    .order-info       { flex: 1; }
+    .order-rest-name  {
+      font-weight:   700;
+      font-size:     1rem;
+      margin-bottom: 0.3rem;
+    }
+    .order-meta {
+      display:     flex;
+      gap:         1.25rem;
+      font-size:   0.75rem;
+      color:       var(--text-sec);
+      font-family: var(--font-mono);
+      flex-wrap:   wrap;
+    }
+    .order-id { color: var(--cyan); }
+
+    .order-right {
+      display:        flex;
+      flex-direction: column;
+      align-items:    flex-end;
+      gap:            0.5rem;
+      flex-shrink:    0;
+    }
+    .order-total {
+      font-family: var(--font-mono);
+      font-size:   1.15rem;
+      font-weight: 700;
+      color:       var(--cyan);
+      text-shadow: 0 0 10px var(--cyan-glow);
+    }
+    .order-chevron {
+      color:      var(--text-dim);
+      font-size:  0.85rem;
+      transition: transform var(--trans);
+    }
+    .order-card.expanded .order-chevron { transform: rotate(180deg); }
+
+    /* ── ORDER DETAIL EXPANDED ─────────────────────────── */
+    .order-detail {
+      display:     none;
+      border-top:  1px solid var(--border);
+      padding:     1.5rem;
+    }
+    .order-card.expanded .order-detail { display: block; }
+
+    /* tracking bar */
+    .mini-tracking {
+      background:    var(--bg3);
+      border-radius: var(--radius);
+      padding:       1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    .mini-tracking-title {
+      font-family:    var(--font-mono);
+      font-size:      0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color:          var(--text-dim);
+      margin-bottom:  1rem;
+    }
+    .mini-steps {
+      display:        flex;
+      align-items:    center;
+      justify-content: space-between;
+      position:       relative;
+    }
+    .mini-steps::before {
+      content:    '';
+      position:   absolute;
+      top:        18px; left: 10%; right: 10%;
+      height:     2px;
+      background: var(--border);
+      z-index:    0;
+    }
+    .mini-step {
+      display:        flex;
+      flex-direction: column;
+      align-items:    center;
+      gap:            0.4rem;
+      position:       relative;
+      z-index:        1;
+    }
+    .mini-dot {
+      width:         36px; height: 36px;
+      border-radius: 50%;
+      background:    var(--bg4);
+      border:        2px solid var(--border);
+      display:       flex;
+      align-items:   center;
+      justify-content: center;
+      font-size:     0.85rem;
+      transition:    all var(--trans);
+    }
+    .mini-step.done .mini-dot {
+      background:   var(--cyan-dim);
+      border-color: var(--cyan);
+      box-shadow:   0 0 12px var(--cyan-glow);
+    }
+    .mini-step.active .mini-dot {
+      background:   var(--green-dim);
+      border-color: var(--green);
+      box-shadow:   0 0 18px rgba(0,255,136,0.4);
+      animation:    ping-green 1.2s ease-in-out infinite;
+    }
+    @keyframes ping-green {
+      0%,100% { box-shadow: 0 0 18px rgba(0,255,136,0.4); }
+      50%      { box-shadow: 0 0 30px rgba(0,255,136,0.7); }
+    }
+    .mini-step-label {
+      font-size:   0.65rem;
+      color:       var(--text-dim);
+      font-family: var(--font-mono);
+      text-align:  center;
+    }
+    .mini-step.done   .mini-step-label { color: var(--text-sec); }
+    .mini-step.active .mini-step-label { color: var(--green); }
+
+    /* order items list */
+    .order-items-table { width: 100%; margin-bottom: 1.25rem; }
+    .order-item-row {
+      display:       flex;
+      align-items:   center;
+      gap:           1rem;
+      padding:       0.75rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size:     0.87rem;
+    }
+    .order-item-row:last-child { border-bottom: none; }
+    .order-item-img {
+      width:         48px; height: 48px;
+      border-radius: var(--radius-sm);
+      object-fit:    cover;
+      border:        1px solid var(--border);
+      flex-shrink:   0;
+    }
+    .order-item-name  { flex: 1; font-weight: 500; }
+    .order-item-qty   { color: var(--text-dim); font-family: var(--font-mono); }
+    .order-item-price {
+      color:       var(--cyan);
+      font-family: var(--font-mono);
+      font-weight: 700;
+      text-shadow: 0 0 8px var(--cyan-glow);
+    }
+
+    /* order footer */
+    .order-footer {
+      display:       flex;
+      align-items:   center;
+      justify-content: space-between;
+      padding-top:   1rem;
+      border-top:    1px solid var(--border);
+      flex-wrap:     wrap;
+      gap:           1rem;
+    }
+    .order-address {
+      font-size:   0.8rem;
+      color:       var(--text-sec);
+      display:     flex;
+      align-items: center;
+      gap:         0.4rem;
+    }
+    .order-footer-actions {
+      display: flex;
+      gap:     0.75rem;
+    }
+
+    /* ── EMPTY ORDERS ──────────────────────────────────── */
+    .empty-orders {
+      text-align:    center;
+      padding:       5rem 2rem;
+      background:    var(--bg2);
+      border:        1px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+    .empty-orders-icon {
+      font-size:     4rem;
+      margin-bottom: 1.5rem;
+      opacity:       0.4;
+    }
+    .empty-orders h3 {
+      font-family:   var(--font-display);
+      font-size:     1.5rem;
+      font-weight:   700;
+      margin-bottom: 0.75rem;
+    }
+    .empty-orders p {
+      color:         var(--text-sec);
+      margin-bottom: 2rem;
+      font-size:     0.9rem;
+    }
+
+    @media (max-width: 900px) {
+      .points-hero { grid-template-columns: 1fr; text-align: center; }
+      .points-icon { margin: 0 auto; }
+      .points-sub  { justify-content: center; }
+      .stats-grid  { grid-template-columns: repeat(2, 1fr); }
+      .points-bar-bg { width: 100%; }
+      .points-bar-wrap { width: 100%; }
+    }
+    @media (max-width: 500px) {
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body class="scanlines">
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo">NOM<span>A</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="menu.html">Restaurants</a></li>
+    <li><a href="cart.html">Cart</a></li>
+    <li><a href="orders.html" class="active">My Orders</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="cart-btn" onclick="window.location.href='cart.html'">
+      🛒 Cart <div class="cart-badge" id="cart-count">0</div>
+    </button>
+    <button class="btn btn-cyan" id="btn-auth"
+      onclick="window.location.href='index.html'">
+      Sign In
+    </button>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="container page-hero-content">
+    <div class="section-label">Account</div>
+    <h1>My <em>Orders</em></h1>
+    <p>Your full order history, rewards, and live tracking</p>
+  </div>
+</div>
+
+<div class="page">
+  <div class="container">
+
+    <!-- NOT LOGGED IN -->
+    <div id="not-logged-in" style="display:none; padding:4rem 0;">
+      <div class="empty-orders">
+        <div class="empty-orders-icon">🔒</div>
+        <h3>Sign in to view your orders</h3>
+        <p>Your order history and rewards will appear here</p>
+        <a href="index.html" class="btn btn-cyan">Sign In →</a>
+      </div>
+    </div>
+
+    <!-- LOGGED IN CONTENT -->
+    <div id="orders-content" style="display:none;">
+
+      <!-- POINTS HERO -->
+      <div class="points-hero">
+        <div class="points-icon">⭐</div>
+        <div class="points-info">
+          <div class="points-label">Reward Points</div>
+          <div class="points-value" id="pts-value">0</div>
+          <div class="points-sub">
+            <span id="pts-tier">Bronze Member</span>
+            <div class="streak-pill" id="streak-pill">
+              🔥 0 day streak
+            </div>
+          </div>
+        </div>
+        <div class="points-bar-wrap">
+          <div class="tier-label">
+            <span id="tier-current">Bronze</span>
+            <span id="tier-next-label">Silver — 500 pts</span>
+          </div>
+          <div class="points-bar-bg">
+            <div class="points-bar-fill" id="pts-bar" style="width:0%"></div>
+          </div>
+          <div class="tier-next" id="tier-next-txt">
+            0 points to next tier
+          </div>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">📦</div>
+          <div class="stat-value" id="stat-orders">0</div>
+          <div class="stat-label">Total Orders</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-value" id="stat-spent">$0</div>
+          <div class="stat-label">Total Spent</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-value" id="stat-streak">0</div>
+          <div class="stat-label">Day Streak</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-value" id="stat-points">0</div>
+          <div class="stat-label">Points</div>
+        </div>
+      </div>
+
+      <!-- ORDERS LIST -->
+      <div class="flex-between mb-3">
+        <div>
+          <div class="section-label">History</div>
+          <h2 class="section-title">
+            Order <em>History</em>
+          </h2>
+        </div>
+        <span id="orders-count"
+          style="font-size:0.8rem; color:var(--text-dim);
+                 font-family:var(--font-mono);">
+        </span>
+      </div>
+
+      <div id="orders-list">
+        <div class="skeleton" style="height:90px; border-radius:16px; margin-bottom:1rem;"></div>
+        <div class="skeleton" style="height:90px; border-radius:16px; margin-bottom:1rem;"></div>
+        <div class="skeleton" style="height:90px; border-radius:16px;"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">NOM<span>A</span></div>
+        <p class="footer-desc">
+          Extraordinary food experiences delivered to your door.
+          Curated restaurants, real chefs, zero compromise.
+        </p>
+        <div class="footer-socials">
+          <a class="social-btn" href="#">𝕏</a>
+          <a class="social-btn" href="#">📸</a>
+          <a class="social-btn" href="#">f</a>
+          <a class="social-btn" href="#">♪</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="menu.html">All Restaurants</a></li>
+          <li><a href="menu.html?cuisine=Japanese">Japanese</a></li>
+          <li><a href="menu.html?cuisine=Italian">Italian</a></li>
+          <li><a href="menu.html?cuisine=Vegan">Vegan</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Account</h4>
+        <ul>
+          <li><a href="index.html">Sign In</a></li>
+          <li><a href="orders.html">My Orders</a></li>
+          <li><a href="cart.html">My Cart</a></li>
+        </ul>
+      </div>
+    <div class="footer-col">
+  <h4>Company</h4>
+  <ul>
+    <li><a href="about.html">About NOMA</a></li>
+    <li><a href="about.html?section=partner">Partner With Us</a></li>
+    <li><a href="about.html?section=careers">Careers</a></li>
+    <li><a href="about.html?section=contact">Contact Us</a></li>
+    <li><a href="about.html?section=blog">Blog</a></li>
+  </ul>
+</div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 NOMA Technologies Ltd. All rights reserved.</span>
+      <div style="display:flex; gap:1.5rem;">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+      </div>
+      <span style="color:var(--cyan);">Built with obsession. ✦</span>
+    </div>
+  </div>
+</footer>
+
+<div id="toast-container"></div>
+
+<script>
+const API   = 'http://localhost:5000/api';
+const token = localStorage.getItem('noma_token');
+const user  = JSON.parse(localStorage.getItem('noma_user') || 'null');
+
+const REST_IMAGES = {
+  1: 'https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=200&q=80',
+  2: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=200&q=80',
+  3: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=200&q=80',
+  4: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200&q=80'
+};
+const ITEM_IMAGES = {
+  'Tonkotsu Ramen':         'https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=100&q=80',
+  'Spicy Miso Ramen':       'https://images.unsplash.com/photo-1591814468924-caf88d1232e1?w=100&q=80',
+  'Gyoza (6pcs)':           'https://images.unsplash.com/photo-1534482421-64566f976cfa?w=100&q=80',
+  'Wagyu Ribeye':           'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=100&q=80',
+  'Smoked Brisket':         'https://images.unsplash.com/photo-1558030006-450675393462?w=100&q=80',
+  'Loaded Fries':           'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=100&q=80',
+  'Buddha Bowl':            'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=100&q=80',
+  'Avocado Toast':          'https://images.unsplash.com/photo-1541519227354-08fa5d50c820?w=100&q=80',
+  'Green Smoothie':         'https://images.unsplash.com/photo-1502741224143-90386d7f8c82?w=100&q=80',
+  'Margherita Pizza':       'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=100&q=80',
+  'Truffle Mushroom Pizza': 'https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=100&q=80',
+  'Tiramisu':               'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=100&q=80',
+};
+const DEFAULT_IMG = 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=100&q=80';
+
+// ── AUTH GUARD ────────────────────────────────────────────
+if (!token || !user) {
+  document.getElementById('not-logged-in').style.display  = 'block';
+  document.getElementById('orders-content').style.display = 'none';
+} else {
+  document.getElementById('btn-auth').textContent = `👤 ${user.name.split(' ')[0]}`;
+  document.getElementById('btn-auth').onclick = null;
+  document.getElementById('orders-content').style.display = 'block';
+  updateCartCount();
+  loadProfile();
+  loadOrders();
+}
+
+// ── CART COUNT ────────────────────────────────────────────
+async function updateCartCount() {
+  if (!token) return;
+  try {
+    const res  = await fetch(`${API}/cart`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    document.getElementById('cart-count').textContent = data.item_count || 0;
+  } catch {}
+}
+
+// ── LOAD PROFILE ──────────────────────────────────────────
+async function loadProfile() {
+  try {
+    const res  = await fetch(`${API}/auth/profile`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    const u    = data.user;
+
+    // points value
+    document.getElementById('pts-value').textContent  = u.points;
+    document.getElementById('stat-points').textContent = u.points;
+    document.getElementById('stat-streak').textContent = u.streak;
+
+    // streak pill
+    document.getElementById('streak-pill').textContent =
+      `🔥 ${u.streak} day streak`;
+
+    // tier logic
+    const tiers = [
+      { name: 'Bronze',  min: 0,    max: 500  },
+      { name: 'Silver',  min: 500,  max: 1000 },
+      { name: 'Gold',    min: 1000, max: 2500 },
+      { name: 'Diamond', min: 2500, max: 5000 },
+    ];
+    const tier = tiers.find(t =>
+      u.points >= t.min && u.points < t.max) || tiers[3];
+    const nextTier = tiers[tiers.indexOf(tier) + 1];
+
+    document.getElementById('pts-tier').textContent = `${tier.name} Member`;
+    document.getElementById('tier-current').textContent = tier.name;
+
+    if (nextTier) {
+      const progress = ((u.points - tier.min) / (nextTier.min - tier.min)) * 100;
+      const toNext   = nextTier.min - u.points;
+      document.getElementById('tier-next-label').textContent =
+        `${nextTier.name} — ${nextTier.min} pts`;
+      document.getElementById('tier-next-txt').textContent =
+        `${toNext} points to ${nextTier.name}`;
+      setTimeout(() => {
+        document.getElementById('pts-bar').style.width = `${Math.min(progress, 100)}%`;
+      }, 400);
+    } else {
+      document.getElementById('tier-next-label').textContent = 'Max Tier 💎';
+      document.getElementById('tier-next-txt').textContent   = 'You\'ve reached Diamond!';
+      document.getElementById('pts-bar').style.width         = '100%';
+    }
+
+  } catch {}
+}
+
+// ── LOAD ORDERS ───────────────────────────────────────────
+async function loadOrders() {
+  try {
+    const res  = await fetch(`${API}/orders`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    const orders = data.orders;
+
+    const totalSpent = orders.reduce((s, o) => s + o.total, 0);
+    document.getElementById('stat-orders').textContent = orders.length;
+    document.getElementById('stat-spent').textContent  = `$${totalSpent.toFixed(0)}`;
+    document.getElementById('orders-count').textContent =
+      `${orders.length} order${orders.length !== 1 ? 's' : ''}`;
+
+    if (!orders.length) {
+      document.getElementById('orders-list').innerHTML = `
+        <div class="empty-orders">
+          <div class="empty-orders-icon">📦</div>
+          <h3>No orders yet</h3>
+          <p>Your first NOMA order is just a few clicks away</p>
+          <a href="menu.html" class="btn btn-cyan">
+            Start Ordering →
+          </a>
+        </div>`;
+      return;
+    }
+
+    document.getElementById('orders-list').innerHTML =
+      orders.map((o, i) => renderOrderCard(o, i)).join('');
+
+  } catch {
+    showToast('❌', 'Error', 'Could not load orders', 'error');
+  }
+}
+
+// ── RENDER ORDER CARD ─────────────────────────────────────
+function renderOrderCard(order, index) {
+  const date    = new Date(order.created_at).toLocaleDateString('en-US', {
+    weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
+  });
+  const time    = new Date(order.created_at).toLocaleTimeString('en-US', {
+    hour: '2-digit', minute: '2-digit'
+  });
+  const elapsed = (Date.now() - new Date(order.created_at).getTime()) / 60000;
+
+  let status = 'confirmed';
+  if (elapsed > 2)  status = 'preparing';
+  if (elapsed > 10) status = 'on-the-way';
+  if (elapsed > 25) status = 'delivered';
+
+  const statusMap = {
+    'confirmed':  { label: 'Confirmed',  cls: 'status-confirmed'  },
+    'preparing':  { label: 'Preparing',  cls: 'status-preparing'  },
+    'on-the-way': { label: 'On The Way', cls: 'status-on-the-way' },
+    'delivered':  { label: 'Delivered',  cls: 'status-delivered'  },
+  };
+  const s = statusMap[status];
+
+  const steps    = ['confirmed','preparing','on-the-way','delivered'];
+  const curIdx   = steps.indexOf(status);
+  const stepEmojis  = { 'confirmed':'✓', 'preparing':'👨‍🍳', 'on-the-way':'🛵', 'delivered':'🎉' };
+  const stepLabels  = { 'confirmed':'Confirmed', 'preparing':'Preparing', 'on-the-way':'On The Way', 'delivered':'Delivered' };
+
+  const trackingHTML = steps.map((st, i) => `
+    <div class="mini-step ${i < curIdx ? 'done' : i === curIdx ? 'active' : ''}">
+      <div class="mini-dot">${i <= curIdx ? stepEmojis[st] : i + 1}</div>
+      <div class="mini-step-label">${stepLabels[st]}</div>
+    </div>
+  `).join('');
+
+  return `
+    <div class="order-card" id="order-${order.id}"
+         style="animation-delay:${index * 0.07}s;">
+
+      <div class="order-header" onclick="toggleOrder(${order.id})">
+        <img class="order-rest-img"
+             src="${REST_IMAGES[order.restaurant_id] ||
+               `https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=200&q=80`}"
+             alt="${order.restaurant_name}" />
+        <div class="order-info">
+          <div class="order-rest-name">${order.restaurant_name}</div>
+          <div class="order-meta">
+            <span>📅 ${date} · ${time}</span>
+            <span class="order-id">Order #${order.id}</span>
+          </div>
+        </div>
+        <div class="order-right">
+          <div class="order-total">$${order.total.toFixed(2)}</div>
+          <div class="status ${s.cls}">${s.label}</div>
+          <div class="order-chevron">▼</div>
+        </div>
+      </div>
+
+      <div class="order-detail" id="detail-${order.id}">
+
+        <!-- mini tracking -->
+        <div class="mini-tracking">
+          <div class="mini-tracking-title">Order Status</div>
+          <div class="mini-steps">${trackingHTML}</div>
+        </div>
+
+        <!-- items -->
+        <div class="order-items-table" id="items-${order.id}">
+          <div class="skeleton" style="height:56px; border-radius:8px;"></div>
+        </div>
+
+        <!-- footer -->
+        <div class="order-footer">
+          <div class="order-address">
+            📍 ${order.address}
+          </div>
+          <div class="order-footer-actions">
+            <button class="btn btn-outline-cyan"
+              onclick="reorder(${order.id})"
+              style="font-size:0.82rem; padding:0.45rem 1.1rem;">
+              🔄 Reorder
+            </button>
+            <a href="menu.html?restaurant=${order.restaurant_id}"
+               class="btn btn-ghost"
+               style="font-size:0.82rem; padding:0.45rem 1.1rem;">
+              View Restaurant
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `;
+}
+
+// ── TOGGLE ORDER ──────────────────────────────────────────
+async function toggleOrder(id) {
+  const card       = document.getElementById(`order-${id}`);
+  const isExpanded = card.classList.contains('expanded');
+
+  document.querySelectorAll('.order-card')
+    .forEach(c => c.classList.remove('expanded'));
+
+  if (isExpanded) return;
+  card.classList.add('expanded');
+
+  const itemsEl = document.getElementById(`items-${id}`);
+  if (itemsEl.querySelector('.skeleton')) {
+    try {
+      const res  = await fetch(`${API}/orders/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+
+      itemsEl.innerHTML = data.items.map(item => `
+        <div class="order-item-row">
+          <img class="order-item-img"
+               src="${ITEM_IMAGES[item.name] || DEFAULT_IMG}"
+               alt="${item.name}" />
+          <div class="order-item-name">${item.name}</div>
+          <div class="order-item-qty">×${item.quantity}</div>
+          <div class="order-item-price">$${item.subtotal.toFixed(2)}</div>
+        </div>
+      `).join('');
+
+    } catch {
+      itemsEl.innerHTML =
+        '<p style="font-size:0.85rem;color:var(--text-sec);">Could not load items</p>';
+    }
+  }
+}
+
+// ── REORDER ───────────────────────────────────────────────
+async function reorder(orderId) {
+  if (!token) return;
+  try {
+    const res  = await fetch(`${API}/orders/${orderId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+
+    for (const item of data.items) {
+      await fetch(`${API}/cart`, {
+        method:  'POST',
+        headers: {
+          'Content-Type':  'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          menu_item_id: item.menu_item_id || item.id,
+          quantity:     item.quantity
+        })
+      });
+    }
+
+    showToast('🛒', 'Reordered!', 'Items added to your cart', 'success');
+    setTimeout(() => window.location.href = 'cart.html', 1200);
+
+  } catch {
+    showToast('❌', 'Error', 'Could not reorder', 'error');
+  }
+}
+
+// ── NAVBAR SCROLL ─────────────────────────────────────────
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar')
+    .classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// ── TOAST ─────────────────────────────────────────────────
+function showToast(icon, title, sub, type = '') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `
+    <div class="toast-icon">${icon}</div>
+    <div>
+      <div class="toast-title">${title}</div>
+      <div class="toast-sub">${sub}</div>
+    </div>`;
+  c.appendChild(t);
+  setTimeout(() => {
+    t.style.animation = 'toastOut 0.3s forwards';
+    setTimeout(() => t.remove(), 300);
+  }, 3500);
+}
+</script>
+</body>
+</html>

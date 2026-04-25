@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NOMA – Cart</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <style>
+    /* ── PAGE HERO ─────────────────────────────────────── */
+    .page-hero {
+      background:    var(--bg2);
+      border-bottom: 1px solid var(--border-cyan);
+      padding:       7rem 0 3rem;
+      position:      relative;
+      overflow:      hidden;
+      box-shadow:    0 0 40px rgba(0,245,255,0.05);
+    }
+    .page-hero::before {
+      content:    '';
+      position:   absolute;
+      inset:      0;
+      background-image:
+        linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .page-hero::after {
+      content:    '';
+      position:   absolute;
+      top: -100px; right: -100px;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(0,245,255,0.06), transparent 70%);
+      pointer-events: none;
+    }
+    .page-hero-content { position: relative; z-index: 1; }
+    .page-hero h1 {
+      font-family:    var(--font-display);
+      font-size:      clamp(2.5rem, 5vw, 4rem);
+      font-weight:    900;
+      letter-spacing: -0.03em;
+      margin-bottom:  0.5rem;
+    }
+    .page-hero h1 em {
+      font-style:  italic;
+      color:       var(--cyan);
+      text-shadow: 0 0 30px var(--cyan-glow);
+    }
+    .page-hero p { color: var(--text-sec); font-size: 1rem; }
+
+    /* ── CART LAYOUT ───────────────────────────────────── */
+    .cart-layout {
+      display:               grid;
+      grid-template-columns: 1fr 400px;
+      gap:                   2.5rem;
+      padding:               3rem 0 6rem;
+      align-items:           start;
+    }
+
+    /* ── CART ITEM ─────────────────────────────────────── */
+    .cart-item {
+      display:       flex;
+      align-items:   center;
+      gap:           1.25rem;
+      background:    var(--bg2);
+      border:        1px solid var(--border);
+      border-radius: var(--radius);
+      padding:       1.25rem;
+      margin-bottom: 1rem;
+      transition:    all var(--trans);
+      animation:     slideUp 0.4s var(--ease) both;
+      position:      relative;
+      overflow:      hidden;
+    }
+    .cart-item::before {
+      content:    '';
+      position:   absolute;
+      left: 0; top: 0; bottom: 0;
+      width:      3px;
+      background: var(--cyan);
+      box-shadow: 0 0 10px var(--cyan);
+      opacity:    0;
+      transition: opacity var(--trans);
+    }
+    .cart-item:hover {
+      border-color: var(--border-cyan);
+      box-shadow:   0 0 25px rgba(0,245,255,0.08);
+    }
+    .cart-item:hover::before { opacity: 1; }
+
+    @keyframes slideUp {
+      from { opacity:0; transform:translateY(16px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    .cart-item-img {
+      width:         90px; height: 90px;
+      border-radius: var(--radius-sm);
+      object-fit:    cover;
+      border:        1px solid var(--border-cyan);
+      box-shadow:    0 0 15px rgba(0,245,255,0.1);
+      flex-shrink:   0;
+    }
+    .cart-item-info    { flex: 1; }
+    .cart-item-name    { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; }
+    .cart-item-rest    {
+      font-size:     0.75rem;
+      color:         var(--text-sec);
+      font-family:   var(--font-mono);
+      margin-bottom: 0.5rem;
+    }
+    .cart-item-unit    {
+      font-size:   0.75rem;
+      color:       var(--text-dim);
+      font-family: var(--font-mono);
+    }
+
+    /* ── SUMMARY PANEL ─────────────────────────────────── */
+    .summary-panel {
+      background:    var(--bg2);
+      border:        1px solid var(--border-cyan);
+      border-radius: var(--radius-lg);
+      padding:       2rem;
+      position:      sticky;
+      top:           90px;
+      box-shadow:    0 0 40px rgba(0,245,255,0.08);
+    }
+    .summary-title {
+      font-family:   var(--font-display);
+      font-size:     1.3rem;
+      font-weight:   700;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+      color:         var(--cyan);
+      text-shadow:   0 0 15px var(--cyan-glow);
+    }
+    .summary-row {
+      display:       flex;
+      justify-content: space-between;
+      align-items:   center;
+      font-size:     0.87rem;
+      color:         var(--text-sec);
+      margin-bottom: 0.75rem;
+    }
+    .summary-row.total {
+      font-size:     1.1rem;
+      font-weight:   700;
+      color:         var(--text);
+      padding-top:   1rem;
+      margin-top:    0.5rem;
+      border-top:    1px solid var(--border);
+    }
+    .summary-row.total .val {
+      color:       var(--cyan);
+      font-family: var(--font-mono);
+      font-size:   1.3rem;
+      text-shadow: 0 0 15px var(--cyan-glow);
+    }
+    .summary-row .free {
+      color:       var(--green);
+      font-family: var(--font-mono);
+      font-size:   0.8rem;
+    }
+
+    /* address input */
+    .address-section {
+      margin: 1.5rem 0;
+      padding: 1.25rem;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    .address-section-title {
+      font-family:    var(--font-mono);
+      font-size:      0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color:          var(--cyan);
+      margin-bottom:  0.75rem;
+    }
+
+    /* checkout button */
+    .checkout-btn {
+      width:         100%;
+      padding:       1rem;
+      font-size:     1rem;
+      border-radius: var(--radius);
+      justify-content: center;
+      margin-top:    1rem;
+      position:      relative;
+      overflow:      hidden;
+    }
+    .checkout-btn::after {
+      content:    '';
+      position:   absolute;
+      inset:      0;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255,255,255,0.15) 50%,
+        transparent 100%);
+      transform:  translateX(-100%);
+      transition: transform 0.6s var(--ease);
+    }
+    .checkout-btn:hover::after { transform: translateX(100%); }
+
+    /* points preview */
+    .points-preview {
+      display:       flex;
+      align-items:   center;
+      gap:           0.75rem;
+      background:    var(--amber-dim);
+      border:        1px solid rgba(255,190,11,0.2);
+      border-radius: var(--radius-sm);
+      padding:       0.85rem 1rem;
+      margin-top:    1rem;
+      font-size:     0.82rem;
+    }
+    .pts-val {
+      color:       var(--amber);
+      font-family: var(--font-mono);
+      font-weight: 700;
+      text-shadow: 0 0 10px var(--amber-glow);
+    }
+
+    /* trust badges */
+    .trust-badges {
+      display:       flex;
+      gap:           1rem;
+      margin-top:    1.25rem;
+      padding-top:   1.25rem;
+      border-top:    1px solid var(--border);
+      justify-content: center;
+    }
+    .trust-badge {
+      display:     flex;
+      align-items: center;
+      gap:         0.35rem;
+      font-size:   0.7rem;
+      color:       var(--text-dim);
+      font-family: var(--font-mono);
+    }
+
+    /* ── TRACKING PANEL ────────────────────────────────── */
+    .tracking-panel {
+      background:    var(--bg2);
+      border:        1px solid rgba(0,255,136,0.2);
+      border-radius: var(--radius-lg);
+      padding:       2rem;
+      margin-bottom: 2rem;
+      display:       none;
+      box-shadow:    0 0 40px rgba(0,255,136,0.06);
+      animation:     slideUp 0.5s var(--ease) both;
+    }
+    .tracking-header {
+      display:       flex;
+      align-items:   center;
+      gap:           1rem;
+      margin-bottom: 2rem;
+    }
+    .tracking-icon {
+      width:         56px; height: 56px;
+      border-radius: 50%;
+      background:    var(--green-dim);
+      border:        1px solid rgba(0,255,136,0.3);
+      display:       flex;
+      align-items:   center;
+      justify-content: center;
+      font-size:     1.5rem;
+      box-shadow:    0 0 20px rgba(0,255,136,0.2);
+      animation:     pulse-green 2s ease-in-out infinite;
+    }
+    @keyframes pulse-green {
+      0%,100% { box-shadow: 0 0 20px rgba(0,255,136,0.2); }
+      50%      { box-shadow: 0 0 40px rgba(0,255,136,0.4); }
+    }
+    .tracking-header-info h3 {
+      font-size:     1.1rem;
+      font-weight:   700;
+      color:         var(--green);
+      margin-bottom: 0.2rem;
+    }
+    .tracking-header-info p {
+      font-size: 0.82rem;
+      color:     var(--text-sec);
+    }
+
+    /* tracking steps */
+    .tracking-steps {
+      display:        grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:            0;
+      position:       relative;
+      margin-bottom:  1.5rem;
+    }
+    .tracking-steps::before {
+      content:    '';
+      position:   absolute;
+      top:        20px; left: 12.5%; right: 12.5%;
+      height:     2px;
+      background: var(--border);
+      z-index:    0;
+    }
+    .t-step {
+      display:        flex;
+      flex-direction: column;
+      align-items:    center;
+      gap:            0.5rem;
+      position:       relative;
+      z-index:        1;
+    }
+    .t-dot {
+      width:         40px; height: 40px;
+      border-radius: 50%;
+      background:    var(--bg3);
+      border:        2px solid var(--border);
+      display:       flex;
+      align-items:   center;
+      justify-content: center;
+      font-size:     1rem;
+      transition:    all var(--trans);
+    }
+    .t-step.done .t-dot {
+      background:   var(--cyan-dim);
+      border-color: var(--cyan);
+      box-shadow:   0 0 15px var(--cyan-glow);
+    }
+    .t-step.active .t-dot {
+      background:   var(--green-dim);
+      border-color: var(--green);
+      box-shadow:   0 0 20px rgba(0,255,136,0.4);
+      animation:    ping-green 1.2s ease-in-out infinite;
+    }
+    @keyframes ping-green {
+      0%,100% { box-shadow: 0 0 20px rgba(0,255,136,0.4); }
+      50%      { box-shadow: 0 0 35px rgba(0,255,136,0.7); }
+    }
+    .t-label {
+      font-size:  0.68rem;
+      color:      var(--text-dim);
+      text-align: center;
+      font-family: var(--font-mono);
+      max-width:  70px;
+      line-height: 1.3;
+    }
+    .t-step.done   .t-label  { color: var(--text-sec); }
+    .t-step.active .t-label  { color: var(--green); }
+
+    .tracking-eta {
+      text-align:    center;
+      padding:       1rem;
+      background:    var(--bg3);
+      border-radius: var(--radius-sm);
+      font-size:     0.82rem;
+      color:         var(--text-sec);
+    }
+    .tracking-eta span {
+      color:       var(--green);
+      font-family: var(--font-mono);
+      font-weight: 700;
+    }
+
+    /* ── EMPTY CART ────────────────────────────────────── */
+    .empty-cart {
+      text-align:  center;
+      padding:     5rem 2rem;
+      background:  var(--bg2);
+      border:      1px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+    .empty-cart-icon {
+      font-size:     4rem;
+      margin-bottom: 1.5rem;
+      opacity:       0.4;
+    }
+    .empty-cart h3 {
+      font-family:   var(--font-display);
+      font-size:     1.5rem;
+      font-weight:   700;
+      margin-bottom: 0.75rem;
+    }
+    .empty-cart p {
+      color:         var(--text-sec);
+      margin-bottom: 2rem;
+      font-size:     0.9rem;
+    }
+
+    /* ── SUGGESTED ITEMS ───────────────────────────────── */
+    .suggested-section {
+      margin-top:    3rem;
+      padding-top:   3rem;
+      border-top:    1px solid var(--border);
+    }
+    .suggested-grid {
+      display:               grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap:                   1rem;
+      margin-top:            1.25rem;
+    }
+    .suggested-card {
+      background:    var(--bg2);
+      border:        1px solid var(--border);
+      border-radius: var(--radius);
+      overflow:      hidden;
+      cursor:        pointer;
+      transition:    all var(--trans);
+    }
+    .suggested-card:hover {
+      border-color: var(--border-cyan);
+      transform:    translateY(-4px);
+      box-shadow:   0 0 20px var(--cyan-glow);
+    }
+    .suggested-card img {
+      width:      100%; height: 120px;
+      object-fit: cover;
+    }
+    .suggested-card-body { padding: 0.75rem; }
+    .suggested-name  { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .suggested-price { font-size: 0.8rem; color: var(--cyan); font-family: var(--font-mono); }
+
+    @media (max-width: 900px) {
+      .cart-layout { grid-template-columns: 1fr; }
+      .summary-panel { position: static; }
+      .tracking-steps { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+      .tracking-steps::before { display: none; }
+    }
+  </style>
+</head>
+<body class="scanlines">
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo">NOM<span>A</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="menu.html">Restaurants</a></li>
+    <li><a href="cart.html" class="active">Cart</a></li>
+    <li><a href="orders.html">My Orders</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="cart-btn">
+      🛒 Cart <div class="cart-badge" id="cart-count">0</div>
+    </button>
+    <button class="btn btn-cyan" id="btn-auth"
+      onclick="window.location.href='index.html'">
+      Sign In
+    </button>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="container page-hero-content">
+    <div class="section-label">Checkout</div>
+    <h1>Your <em>Cart</em></h1>
+    <p id="cart-subtitle">Review your items and place your order</p>
+  </div>
+</div>
+
+<div class="page">
+  <div class="container">
+
+    <!-- NOT LOGGED IN -->
+    <div id="not-logged-in" style="display:none; padding: 4rem 0;">
+      <div class="empty-cart">
+        <div class="empty-cart-icon">🔒</div>
+        <h3>Sign in to view your cart</h3>
+        <p>You need an account to add items and place orders</p>
+        <a href="index.html" class="btn btn-cyan">Sign In →</a>
+      </div>
+    </div>
+
+    <!-- TRACKING PANEL -->
+    <div class="tracking-panel" id="tracking-panel">
+      <div class="tracking-header">
+        <div class="tracking-icon">🛵</div>
+        <div class="tracking-header-info">
+          <h3>Order Placed Successfully!</h3>
+          <p>Your food is being prepared. Track your order below.</p>
+        </div>
+      </div>
+
+      <div class="tracking-steps">
+        <div class="t-step done" id="step-confirmed">
+          <div class="t-dot">✓</div>
+          <div class="t-label">Confirmed</div>
+        </div>
+        <div class="t-step" id="step-preparing">
+          <div class="t-dot">👨‍🍳</div>
+          <div class="t-label">Preparing</div>
+        </div>
+        <div class="t-step" id="step-onway">
+          <div class="t-dot">🛵</div>
+          <div class="t-label">On The Way</div>
+        </div>
+        <div class="t-step" id="step-delivered">
+          <div class="t-dot">🎉</div>
+          <div class="t-label">Delivered</div>
+        </div>
+      </div>
+
+      <div class="tracking-eta">
+        Estimated delivery:
+        <span id="eta-text">25–35 min</span>
+        &nbsp;·&nbsp; Order #<span id="order-id-display">—</span>
+        &nbsp;·&nbsp; Points earned:
+        <span id="points-earned-display" style="color:var(--amber);">0 ⭐</span>
+      </div>
+    </div>
+
+    <!-- CART CONTENT -->
+    <div id="cart-content">
+      <div class="cart-layout">
+
+        <!-- LEFT: Items -->
+        <div>
+          <!-- Cart items -->
+          <div id="cart-items">
+            <div class="skeleton" style="height:110px; border-radius:16px; margin-bottom:1rem;"></div>
+            <div class="skeleton" style="height:110px; border-radius:16px; margin-bottom:1rem;"></div>
+            <div class="skeleton" style="height:110px; border-radius:16px;"></div>
+          </div>
+
+          <!-- Clear cart -->
+          <div style="display:flex; justify-content:flex-end; margin-top:1rem;">
+            <button class="btn btn-danger" id="clear-btn" style="display:none;">
+              🗑️ Clear Cart
+            </button>
+          </div>
+
+          <!-- Suggested items -->
+          <div class="suggested-section" id="suggested-section" style="display:none;">
+            <div class="section-label">You Might Also Like</div>
+            <h3 style="font-family:var(--font-display); font-size:1.3rem;
+                       font-weight:700; margin-top:0.25rem;">
+              Popular <em style="color:var(--cyan);">Add-ons</em>
+            </h3>
+            <div class="suggested-grid" id="suggested-grid"></div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Summary -->
+        <div>
+          <div class="summary-panel">
+            <div class="summary-title">Order Summary</div>
+
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span id="sub-total">$0.00</span>
+            </div>
+            <div class="summary-row">
+              <span>Delivery Fee</span>
+              <span class="free">Free 🎉</span>
+            </div>
+            <div class="summary-row">
+              <span>Service Fee</span>
+              <span style="color:var(--text-dim); font-family:var(--font-mono);">$0.00</span>
+            </div>
+            <div class="summary-row total">
+              <span>Total</span>
+              <span class="val" id="grand-total">$0.00</span>
+            </div>
+
+            <!-- Address -->
+            <div class="address-section">
+              <div class="address-section-title">📍 Delivery Address</div>
+              <input class="form-input" type="text" id="address-input"
+                placeholder="Enter your full delivery address"
+                style="margin-top:0;" />
+            </div>
+
+            <!-- Checkout btn -->
+            <button class="btn btn-cyan checkout-btn" id="checkout-btn">
+              Place Order →
+            </button>
+
+            <!-- Points -->
+            <div class="points-preview" id="points-preview" style="display:none;">
+              <span style="font-size:1.2rem;">⭐</span>
+              <span>
+                You'll earn
+                <span class="pts-val" id="pts-earn">0</span>
+                reward points for this order
+              </span>
+            </div>
+
+            <!-- Trust badges -->
+            <div class="trust-badges">
+              <div class="trust-badge">🔐 Secure</div>
+              <div class="trust-badge">🚀 Fast</div>
+              <div class="trust-badge">💯 Guaranteed</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">NOM<span>A</span></div>
+        <p class="footer-desc">
+          Extraordinary food experiences delivered to your door.
+          Curated restaurants, real chefs, zero compromise.
+        </p>
+        <div class="footer-socials">
+          <a class="social-btn" href="#">𝕏</a>
+          <a class="social-btn" href="#">📸</a>
+          <a class="social-btn" href="#">f</a>
+          <a class="social-btn" href="#">♪</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="menu.html">All Restaurants</a></li>
+          <li><a href="menu.html?cuisine=Japanese">Japanese</a></li>
+          <li><a href="menu.html?cuisine=Italian">Italian</a></li>
+          <li><a href="menu.html?cuisine=Vegan">Vegan</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Account</h4>
+        <ul>
+          <li><a href="index.html">Sign In</a></li>
+          <li><a href="orders.html">My Orders</a></li>
+          <li><a href="cart.html">My Cart</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About NOMA</a></li>
+          <li><a href="#">Partner With Us</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Contact Us</a></li>
+        </ul>
+      </div>
+    </div>
+   <div class="footer-col">
+  <h4>Company</h4>
+  <ul>
+    <li><a href="about.html">About NOMA</a></li>
+    <li><a href="about.html?section=partner">Partner With Us</a></li>
+    <li><a href="about.html?section=careers">Careers</a></li>
+    <li><a href="about.html?section=contact">Contact Us</a></li>
+    <li><a href="about.html?section=blog">Blog</a></li>
+  </ul>
+</div>
+  </div>
+</footer>
+
+<div id="toast-container"></div>
+
+<script>
+const API   = 'http://localhost:5000/api';
+const token = localStorage.getItem('noma_token');
+const user  = JSON.parse(localStorage.getItem('noma_user') || 'null');
+
+// item images map
+const ITEM_IMAGES = {
+  'Tonkotsu Ramen':         'https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=200&q=80',
+  'Spicy Miso Ramen':       'https://images.unsplash.com/photo-1591814468924-caf88d1232e1?w=200&q=80',
+  'Gyoza (6pcs)':           'https://images.unsplash.com/photo-1534482421-64566f976cfa?w=200&q=80',
+  'Wagyu Ribeye':           'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=200&q=80',
+  'Smoked Brisket':         'https://images.unsplash.com/photo-1558030006-450675393462?w=200&q=80',
+  'Loaded Fries':           'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=200&q=80',
+  'Buddha Bowl':            'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=200&q=80',
+  'Avocado Toast':          'https://images.unsplash.com/photo-1541519227354-08fa5d50c820?w=200&q=80',
+  'Green Smoothie':         'https://images.unsplash.com/photo-1502741224143-90386d7f8c82?w=200&q=80',
+  'Margherita Pizza':       'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200&q=80',
+  'Truffle Mushroom Pizza': 'https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=200&q=80',
+  'Tiramisu':               'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=200&q=80',
+};
+const DEFAULT_IMG = 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=200&q=80';
+
+// auth guard
+if (!token || !user) {
+  document.getElementById('not-logged-in').style.display = 'block';
+  document.getElementById('cart-content').style.display  = 'none';
+} else {
+  document.getElementById('btn-auth').textContent = `👤 ${user.name.split(' ')[0]}`;
+  document.getElementById('btn-auth').onclick = () => window.location.href = 'orders.html';
+  loadCart();
+}
+
+// ── LOAD CART ─────────────────────────────────────────────
+async function loadCart() {
+  try {
+    const res  = await fetch(`${API}/cart`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    document.getElementById('cart-count').textContent = data.item_count || 0;
+    renderCart(data);
+  } catch {
+    showToast('❌', 'Error', 'Could not load cart', 'error');
+  }
+}
+
+// ── RENDER CART ───────────────────────────────────────────
+function renderCart(data) {
+  const container = document.getElementById('cart-items');
+  const clearBtn  = document.getElementById('clear-btn');
+  const suggested = document.getElementById('suggested-section');
+
+  if (!data.items || data.items.length === 0) {
+    container.innerHTML = `
+      <div class="empty-cart">
+        <div class="empty-cart-icon">🛒</div>
+        <h3>Your cart is empty</h3>
+        <p>Looks like you haven't added anything yet.
+           Browse our restaurants and find something delicious.</p>
+        <a href="menu.html" class="btn btn-cyan">
+          Browse Restaurants →
+        </a>
+      </div>`;
+    clearBtn.style.display    = 'none';
+    suggested.style.display   = 'none';
+    updateSummary(0, 0);
+    return;
+  }
+
+  clearBtn.style.display  = 'inline-flex';
+  suggested.style.display = 'block';
+  loadSuggested(data.items[0].restaurant_id);
+
+  container.innerHTML = data.items.map((item, i) => `
+    <div class="cart-item" style="animation-delay:${i * 0.07}s;">
+      <img class="cart-item-img"
+           src="${ITEM_IMAGES[item.name] || DEFAULT_IMG}"
+           alt="${item.name}" />
+      <div class="cart-item-info">
+        <div class="cart-item-name">${item.name}</div>
+        <div class="cart-item-rest">${item.restaurant_name}</div>
+        <div class="cart-item-unit">
+          $${item.price.toFixed(2)} each
+        </div>
+      </div>
+      <div class="qty-controls">
+        <button class="qty-btn"
+          onclick="updateQty(${item.cart_id}, ${item.quantity - 1})">−</button>
+        <div class="qty-num">${item.quantity}</div>
+        <button class="qty-btn"
+          onclick="updateQty(${item.cart_id}, ${item.quantity + 1})">+</button>
+      </div>
+      <div class="cart-item-price">
+        $${item.subtotal.toFixed(2)}
+      </div>
+      <button class="remove-btn"
+        onclick="removeItem(${item.cart_id})" title="Remove item">✕</button>
+    </div>
+  `).join('');
+
+  const subtitle = `${data.item_count} item${data.item_count !== 1 ? 's' : ''}
+    from ${data.items[0]?.restaurant_name}`;
+  document.getElementById('cart-subtitle').textContent = subtitle;
+
+  updateSummary(data.total, data.item_count);
+}
+
+// ── UPDATE SUMMARY ────────────────────────────────────────
+function updateSummary(total, count) {
+  document.getElementById('sub-total').textContent   = `$${total.toFixed(2)}`;
+  document.getElementById('grand-total').textContent = `$${total.toFixed(2)}`;
+
+  if (count > 0) {
+    const pts = Math.floor(total);
+    document.getElementById('pts-earn').textContent         = pts;
+    document.getElementById('points-preview').style.display = 'flex';
+  } else {
+    document.getElementById('points-preview').style.display = 'none';
+  }
+}
+
+// ── LOAD SUGGESTIONS ─────────────────────────────────────
+async function loadSuggested(restId) {
+  try {
+    const res  = await fetch(`${API}/menu/restaurants/${restId}`);
+    const data = await res.json();
+    const all  = Object.values(data.menu).flat().slice(0, 4);
+
+    document.getElementById('suggested-grid').innerHTML =
+      all.map(item => `
+        <div class="suggested-card"
+          onclick="quickAdd(${item.id}, '${item.name.replace(/'/g,"\\'")}')">
+          <img src="${ITEM_IMAGES[item.name] || DEFAULT_IMG}"
+               alt="${item.name}" />
+          <div class="suggested-card-body">
+            <div class="suggested-name">${item.name}</div>
+            <div class="suggested-price">
+              $${item.price.toFixed(2)}
+              <span style="float:right; color:var(--cyan); font-size:1rem;">+</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+  } catch {}
+}
+
+async function quickAdd(id, name) {
+  if (!token) return;
+  try {
+    await fetch(`${API}/cart`, {
+      method:  'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ menu_item_id: id, quantity: 1 })
+    });
+    showToast('✅', `${name} added!`, 'Cart updated', 'success');
+    loadCart();
+  } catch {}
+}
+
+// ── UPDATE QUANTITY ───────────────────────────────────────
+async function updateQty(cartId, newQty) {
+  if (newQty < 1) { removeItem(cartId); return; }
+  try {
+    await fetch(`${API}/cart/${cartId}`, {
+      method:  'PUT',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ quantity: newQty })
+    });
+    loadCart();
+  } catch {
+    showToast('❌', 'Error', 'Could not update quantity', 'error');
+  }
+}
+
+// ── REMOVE ITEM ───────────────────────────────────────────
+async function removeItem(cartId) {
+  try {
+    await fetch(`${API}/cart/${cartId}`, {
+      method:  'DELETE',
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    showToast('🗑️', 'Item removed', 'Cart updated');
+    loadCart();
+  } catch {
+    showToast('❌', 'Error', 'Could not remove item', 'error');
+  }
+}
+
+// ── CLEAR CART ────────────────────────────────────────────
+document.getElementById('clear-btn').addEventListener('click', async () => {
+  try {
+    await fetch(`${API}/cart`, {
+      method:  'DELETE',
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    showToast('🗑️', 'Cart cleared', 'All items removed');
+    loadCart();
+  } catch {
+    showToast('❌', 'Error', 'Could not clear cart', 'error');
+  }
+});
+
+// ── PLACE ORDER ───────────────────────────────────────────
+document.getElementById('checkout-btn').addEventListener('click', async () => {
+  const address = document.getElementById('address-input').value.trim();
+  const btn     = document.getElementById('checkout-btn');
+
+  if (!address) {
+    showToast('⚠️', 'Address required',
+      'Enter your delivery address', 'error');
+    document.getElementById('address-input').focus();
+    return;
+  }
+
+  btn.textContent = '⏳ Placing order...';
+  btn.disabled    = true;
+
+  try {
+    const res  = await fetch(`${API}/orders`, {
+      method:  'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ address })
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      showToast('❌', 'Order failed', data.error, 'error');
+      btn.textContent = 'Place Order →';
+      btn.disabled    = false;
+      return;
+    }
+
+    // show tracking
+    const panel = document.getElementById('tracking-panel');
+    panel.style.display = 'block';
+    document.getElementById('order-id-display').textContent     = data.order_id;
+    document.getElementById('points-earned-display').textContent = `${data.points_earned} ⭐`;
+    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    showToast('🎉', 'Order placed!',
+      `+${data.points_earned} points earned`, 'success');
+
+    loadCart();
+    btn.textContent = 'Place Order →';
+    btn.disabled    = false;
+
+    simulateTracking();
+  } catch {
+    showToast('❌', 'Error', 'Could not place order', 'error');
+    btn.textContent = 'Place Order →';
+    btn.disabled    = false;
+  }
+});
+
+// ── SIMULATE TRACKING ─────────────────────────────────────
+function simulateTracking() {
+  const steps  = ['step-preparing', 'step-onway', 'step-delivered'];
+  const delays = [4000, 10000, 18000];
+
+  steps.forEach((stepId, i) => {
+    setTimeout(() => {
+      // mark all previous done
+      steps.slice(0, i).forEach(id => {
+        const el = document.getElementById(id);
+        el.classList.remove('active');
+        el.classList.add('done');
+        el.querySelector('.t-dot').textContent = '✓';
+      });
+
+      // mark current active
+      const current = document.getElementById(stepId);
+      current.classList.add('active');
+
+      const etas = ['15–25 min', '8–12 min', 'Arriving now!'];
+      document.getElementById('eta-text').textContent = etas[i];
+
+      if (stepId === 'step-delivered') {
+        setTimeout(() => {
+          current.classList.remove('active');
+          current.classList.add('done');
+          current.querySelector('.t-dot').textContent = '✓';
+          document.getElementById('eta-text').textContent = 'Delivered! 🎉';
+          showToast('🎉', 'Delivered!', 'Enjoy your meal!', 'success');
+        }, 4000);
+      }
+    }, delays[i]);
+  });
+}
+
+// ── NAVBAR SCROLL ─────────────────────────────────────────
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar')
+    .classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// ── TOAST ─────────────────────────────────────────────────
+function showToast(icon, title, sub, type = '') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `
+    <div class="toast-icon">${icon}</div>
+    <div>
+      <div class="toast-title">${title}</div>
+      <div class="toast-sub">${sub}</div>
+    </div>`;
+  c.appendChild(t);
+  setTimeout(() => {
+    t.style.animation = 'toastOut 0.3s forwards';
+    setTimeout(() => t.remove(), 300);
+  }, 3500);
+}
+</script>
+</body>
+</html>

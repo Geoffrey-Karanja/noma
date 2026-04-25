@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NOMA – Feed Your World</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <style>
+    /* ── HERO ─────────────────────────────────────────── */
+    .hero {
+      min-height:      100vh;
+      position:        relative;
+      display:         flex;
+      align-items:     center;
+      overflow:        hidden;
+    }
+    .hero-bg {
+      position:   absolute;
+      inset:      0;
+      background: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1600&q=80')
+                  center/cover no-repeat;
+      filter:     brightness(0.25);
+      transform:  scale(1.05);
+      transition: transform 8s ease;
+    }
+    .hero-bg.loaded { transform: scale(1); }
+    .hero-overlay {
+      position:   absolute;
+      inset:      0;
+      background: linear-gradient(
+        135deg,
+        rgba(0,245,255,0.06) 0%,
+        transparent 50%,
+        rgba(255,0,110,0.06) 100%
+      );
+    }
+    .hero-grid {
+      position:        absolute;
+      inset:           0;
+      background-image:
+        linear-gradient(rgba(0,245,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,245,255,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .hero-content {
+      position:   relative;
+      z-index:    2;
+      padding:    8rem 0 5rem;
+      max-width:  720px;
+    }
+    .hero-eyebrow {
+      display:        inline-flex;
+      align-items:    center;
+      gap:            0.6rem;
+      background:     rgba(0,245,255,0.08);
+      border:         1px solid var(--border-cyan);
+      border-radius:  var(--radius-pill);
+      padding:        0.4rem 1.1rem;
+      font-family:    var(--font-mono);
+      font-size:      0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color:          var(--cyan);
+      margin-bottom:  1.75rem;
+      animation:      fadeUp 0.8s var(--ease) both;
+    }
+    .live-dot {
+      width:      7px; height: 7px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 10px var(--cyan);
+      animation:  livePulse 1.5s ease-in-out infinite;
+    }
+    @keyframes livePulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+    .hero-title {
+      font-family:    var(--font-display);
+      font-size:      clamp(3.5rem, 7vw, 6.5rem);
+      font-weight:    900;
+      line-height:    1.0;
+      letter-spacing: -0.03em;
+      margin-bottom:  1.25rem;
+      animation:      fadeUp 0.8s 0.1s var(--ease) both;
+    }
+    .hero-title .line2 {
+      color:       var(--cyan);
+      text-shadow: 0 0 40px var(--cyan-glow), 0 0 80px rgba(0,245,255,0.15);
+      font-style:  italic;
+    }
+    .hero-title .line3 { color: var(--text); }
+
+    .hero-sub {
+      font-size:     1.05rem;
+      color:         var(--text-sec);
+      max-width:     500px;
+      margin-bottom: 2.5rem;
+      font-weight:   300;
+      line-height:   1.8;
+      animation:     fadeUp 0.8s 0.2s var(--ease) both;
+    }
+
+    /* search */
+    .hero-search {
+      display:       flex;
+      align-items:   center;
+      background:    rgba(15,15,15,0.9);
+      border:        1px solid var(--border-cyan);
+      border-radius: var(--radius-pill);
+      padding:       0.4rem 0.4rem 0.4rem 1.5rem;
+      gap:           0.75rem;
+      max-width:     580px;
+      margin-bottom: 1.5rem;
+      backdrop-filter: blur(10px);
+      box-shadow:    0 0 30px rgba(0,245,255,0.1);
+      animation:     fadeUp 0.8s 0.3s var(--ease) both;
+      transition:    box-shadow var(--trans);
+    }
+    .hero-search:focus-within {
+      box-shadow: 0 0 50px rgba(0,245,255,0.2), 0 0 0 1px var(--cyan);
+    }
+    .hero-search input {
+      flex:        1;
+      background:  none;
+      border:      none;
+      outline:     none;
+      color:       var(--text);
+      font-family: var(--font-body);
+      font-size:   1rem;
+    }
+    .hero-search input::placeholder { color: var(--text-dim); }
+    .search-divider {
+      width:      1px;
+      height:     24px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+    .hero-search select {
+      background:  none;
+      border:      none;
+      outline:     none;
+      color:       var(--text-sec);
+      font-family: var(--font-body);
+      font-size:   0.85rem;
+      cursor:      pointer;
+      padding:     0 0.5rem;
+    }
+    .hero-search select option { background: var(--bg2); }
+
+    /* mood chips */
+    .mood-row {
+      display:       flex;
+      gap:           0.5rem;
+      flex-wrap:     wrap;
+      margin-bottom: 3rem;
+      animation:     fadeUp 0.8s 0.4s var(--ease) both;
+    }
+    .mood-chip {
+      background:    rgba(255,255,255,0.04);
+      border:        1px solid var(--border);
+      border-radius: var(--radius-pill);
+      padding:       0.35rem 1rem;
+      font-size:     0.8rem;
+      color:         var(--text-sec);
+      cursor:        pointer;
+      transition:    all var(--trans);
+    }
+    .mood-chip:hover, .mood-chip.active {
+      background:   var(--cyan-dim);
+      border-color: var(--border-cyan);
+      color:        var(--cyan);
+      box-shadow:   0 0 15px rgba(0,245,255,0.15);
+      transform:    translateY(-2px);
+    }
+
+    /* hero stats */
+    .hero-stats {
+      display:    flex;
+      gap:        2.5rem;
+      animation:  fadeUp 0.8s 0.5s var(--ease) both;
+    }
+    .h-stat-num {
+      font-family:  var(--font-mono);
+      font-size:    2rem;
+      font-weight:  700;
+      color:        var(--cyan);
+      text-shadow:  0 0 20px var(--cyan-glow);
+      line-height:  1;
+    }
+    .h-stat-num sup { font-size: 1rem; }
+    .h-stat-label {
+      font-size:      0.7rem;
+      color:          var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top:     0.3rem;
+      font-family:    var(--font-mono);
+    }
+
+    /* hero right image stack */
+    .hero-right {
+      position:    absolute;
+      right:       0; top: 0; bottom: 0;
+      width:       45%;
+      display:     flex;
+      align-items: center;
+      justify-content: center;
+      z-index:     1;
+    }
+    .img-stack {
+      position:   relative;
+      width:       420px;
+      height:      520px;
+    }
+    .img-stack-card {
+      position:      absolute;
+      border-radius: var(--radius);
+      overflow:      hidden;
+      box-shadow:    0 30px 80px rgba(0,0,0,0.7);
+      border:        1px solid var(--border-cyan);
+    }
+    .img-stack-card img { width:100%; height:100%; object-fit:cover; }
+    .isc-main {
+      width: 280px; height: 360px;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 60px var(--cyan-glow), 0 30px 80px rgba(0,0,0,0.7);
+      animation: floatMain 6s ease-in-out infinite;
+    }
+    .isc-tl {
+      width: 160px; height: 180px;
+      top: 0; left: 0;
+      animation: floatTL 7s ease-in-out infinite;
+      border-color: var(--border-mag);
+      box-shadow: 0 0 30px var(--magenta-glow);
+    }
+    .isc-br {
+      width: 160px; height: 160px;
+      bottom: 0; right: 0;
+      animation: floatBR 5s ease-in-out infinite;
+      border-color: rgba(255,190,11,0.3);
+      box-shadow: 0 0 30px var(--amber-glow);
+    }
+    @keyframes floatMain { 0%,100%{transform:translate(-50%,-50%) translateY(0);} 50%{transform:translate(-50%,-50%) translateY(-15px);} }
+    @keyframes floatTL   { 0%,100%{transform:translateY(0) rotate(-3deg);} 50%{transform:translateY(-10px) rotate(-3deg);} }
+    @keyframes floatBR   { 0%,100%{transform:translateY(0) rotate(4deg);} 50%{transform:translateY(-8px) rotate(4deg);} }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(28px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    /* ── HOW IT WORKS ──────────────────────────────────── */
+    .how-step {
+      text-align: center;
+      padding:    2rem 1.5rem;
+      position:   relative;
+    }
+    .step-num {
+      font-family:    var(--font-mono);
+      font-size:      0.7rem;
+      color:          var(--cyan);
+      letter-spacing: 0.1em;
+      margin-bottom:  1rem;
+      text-transform: uppercase;
+    }
+    .step-icon {
+      width:         72px; height: 72px;
+      border-radius: 50%;
+      background:    var(--cyan-dim);
+      border:        1px solid var(--border-cyan);
+      display:       flex;
+      align-items:   center;
+      justify-content: center;
+      font-size:     1.8rem;
+      margin:        0 auto 1.25rem;
+      box-shadow:    0 0 25px var(--cyan-glow);
+      transition:    all var(--trans);
+    }
+    .how-step:hover .step-icon {
+      background:  var(--cyan);
+      box-shadow:  0 0 40px var(--cyan-glow);
+      transform:   scale(1.1);
+    }
+    .step-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .step-desc  { font-size: 0.85rem; color: var(--text-sec); line-height: 1.7; }
+
+    /* connector line between steps */
+    .how-connector {
+      position:   absolute;
+      top:        36px;
+      right:      -50%;
+      width:      100%;
+      height:     1px;
+      background: linear-gradient(90deg, var(--border-cyan), transparent);
+    }
+
+    /* ── POPULAR DISHES ────────────────────────────────── */
+    .dishes-scroll {
+      display:    flex;
+      gap:        1.25rem;
+      overflow-x: auto;
+      padding:    0.5rem 0 1.5rem;
+      scrollbar-width: none;
+    }
+    .dishes-scroll::-webkit-scrollbar { display: none; }
+    .dish-card {
+      flex-shrink:   0;
+      width:         220px;
+      background:    var(--bg2);
+      border:        1px solid var(--border);
+      border-radius: var(--radius);
+      overflow:      hidden;
+      cursor:        pointer;
+      transition:    all var(--trans);
+    }
+    .dish-card:hover {
+      border-color: var(--border-cyan);
+      transform:    translateY(-6px);
+      box-shadow:   0 20px 50px rgba(0,0,0,0.5), 0 0 25px var(--cyan-glow);
+    }
+    .dish-card-img {
+      height:   160px;
+      overflow: hidden;
+    }
+    .dish-card-img img {
+      width:      100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s var(--ease);
+    }
+    .dish-card:hover .dish-card-img img { transform: scale(1.1); }
+    .dish-card-body { padding: 1rem; }
+    .dish-name  { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.3rem; }
+    .dish-rest  { font-size: 0.72rem; color: var(--text-sec); font-family: var(--font-mono); margin-bottom: 0.5rem; }
+    .dish-price { color: var(--cyan); font-family: var(--font-mono); font-size: 0.95rem; font-weight: 700; text-shadow: 0 0 10px var(--cyan-glow); }
+
+    /* ── WHY NOMA ──────────────────────────────────────── */
+    .feature-card {
+      background:    var(--bg2);
+      border:        1px solid var(--border);
+      border-radius: var(--radius);
+      padding:       2rem;
+      transition:    all var(--trans);
+      position:      relative;
+      overflow:      hidden;
+    }
+    .feature-card::before {
+      content:    '';
+      position:   absolute;
+      top: 0; left: 0;
+      width:      100%; height: 2px;
+      background: linear-gradient(90deg, var(--cyan), var(--magenta));
+      opacity:    0;
+      transition: opacity var(--trans);
+    }
+    .feature-card:hover {
+      border-color: var(--border-cyan);
+      transform:    translateY(-4px);
+      box-shadow:   0 20px 50px rgba(0,0,0,0.4), 0 0 20px var(--cyan-glow);
+    }
+    .feature-card:hover::before { opacity: 1; }
+    .feature-icon {
+      font-size:     2rem;
+      margin-bottom: 1rem;
+      display:       block;
+    }
+    .feature-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .feature-desc  { font-size: 0.83rem; color: var(--text-sec); line-height: 1.7; }
+
+    /* ── REWARDS ───────────────────────────────────────── */
+    .rewards-section {
+      background:    var(--bg2);
+      border:        1px solid var(--border-cyan);
+      border-radius: var(--radius-lg);
+      padding:       4rem;
+      position:      relative;
+      overflow:      hidden;
+      box-shadow:    0 0 60px rgba(0,245,255,0.06);
+    }
+    .rewards-section::before {
+      content:    '';
+      position:   absolute;
+      top: -100px; right: -100px;
+      width:      400px; height: 400px;
+      background: radial-gradient(circle, rgba(0,245,255,0.08), transparent 70%);
+      pointer-events: none;
+    }
+    .rewards-section::after {
+      content:    '';
+      position:   absolute;
+      bottom: -100px; left: -100px;
+      width:      300px; height: 300px;
+      background: radial-gradient(circle, rgba(255,0,110,0.06), transparent 70%);
+      pointer-events: none;
+    }
+    .reward-tier {
+      background:    var(--bg3);
+      border:        1px solid var(--border);
+      border-radius: var(--radius);
+      padding:       1.5rem;
+      text-align:    center;
+      transition:    all var(--trans);
+      position:      relative;
+      z-index:       1;
+    }
+    .reward-tier:hover {
+      transform:    translateY(-4px);
+      border-color: var(--border-cyan);
+      box-shadow:   0 0 25px var(--cyan-glow);
+    }
+    .tier-icon  { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .tier-name  { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-sec); margin-bottom: 0.5rem; }
+    .tier-pts   { font-family: var(--font-display); font-size: 1.5rem; font-weight: 900; color: var(--amber); text-shadow: 0 0 15px var(--amber-glow); }
+    .tier-perks { font-size: 0.75rem; color: var(--text-sec); margin-top: 0.5rem; line-height: 1.6; }
+
+    /* ── TESTIMONIALS ──────────────────────────────────── */
+    .testi-card {
+      background:    var(--bg2);
+      border:        1px solid var(--border);
+      border-radius: var(--radius);
+      padding:       2rem;
+      transition:    all var(--trans);
+    }
+    .testi-card:hover {
+      border-color: var(--border-cyan);
+      box-shadow:   0 0 25px var(--cyan-glow);
+    }
+    .testi-stars { color: var(--amber); text-shadow: 0 0 8px var(--amber-glow); font-size: 0.85rem; margin-bottom: 1rem; }
+    .testi-text  { font-size: 0.9rem; color: var(--text-sec); line-height: 1.8; font-style: italic; margin-bottom: 1.5rem; }
+    .testi-author { display: flex; align-items: center; gap: 0.75rem; }
+    .testi-avatar {
+      width:         42px; height: 42px;
+      border-radius: 50%;
+      overflow:      hidden;
+      border:        2px solid var(--border-cyan);
+      box-shadow:    0 0 10px var(--cyan-glow);
+      flex-shrink:   0;
+    }
+    .testi-avatar img { width:100%; height:100%; object-fit:cover; }
+    .testi-name   { font-weight: 600; font-size: 0.85rem; }
+    .testi-loc    { font-size: 0.72rem; color: var(--text-sec); font-family: var(--font-mono); }
+
+    /* ── APP BANNER ────────────────────────────────────── */
+    .app-banner {
+      background:    var(--bg2);
+      border:        1px solid var(--border-mag);
+      border-radius: var(--radius-lg);
+      padding:       4rem;
+      display:       grid;
+      grid-template-columns: 1fr auto;
+      gap:           3rem;
+      align-items:   center;
+      position:      relative;
+      overflow:      hidden;
+      box-shadow:    0 0 60px rgba(255,0,110,0.06);
+    }
+    .app-banner::before {
+      content:    '';
+      position:   absolute;
+      top: -80px; right: 200px;
+      width:      300px; height: 300px;
+      background: radial-gradient(circle, rgba(255,0,110,0.08), transparent 70%);
+      pointer-events: none;
+    }
+    .app-banner h2 { font-size: clamp(1.8rem, 3vw, 2.5rem); margin-bottom: 0.75rem; position: relative; }
+    .app-banner p  { color: var(--text-sec); font-size: 0.95rem; margin-bottom: 1.5rem; position: relative; }
+    .app-btns      { display: flex; gap: 1rem; flex-wrap: wrap; position: relative; }
+    .app-store-btn {
+      display:       flex;
+      align-items:   center;
+      gap:           0.75rem;
+      background:    var(--bg3);
+      border:        1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding:       0.75rem 1.25rem;
+      cursor:        pointer;
+      transition:    all var(--trans);
+    }
+    .app-store-btn:hover {
+      border-color: var(--border-mag);
+      box-shadow:   0 0 20px var(--magenta-glow);
+      transform:    translateY(-2px);
+    }
+    .app-store-btn .store-icon { font-size: 1.8rem; }
+    .app-store-btn .store-text { text-align: left; }
+    .app-store-btn .store-label { font-size: 0.65rem; color: var(--text-sec); display: block; }
+    .app-store-btn .store-name  { font-size: 0.9rem; font-weight: 700; }
+    .app-phones {
+      display:    flex;
+      gap:        1rem;
+      align-items: flex-end;
+    }
+    .app-phone {
+      width:         120px;
+      border-radius: 20px;
+      overflow:      hidden;
+      border:        2px solid var(--border-mag);
+      box-shadow:    0 0 30px var(--magenta-glow);
+    }
+    .app-phone img { width:100%; display:block; }
+
+    /* ── RESTAURANTS SECTION ───────────────────────────── */
+    #restaurants-grid {
+      display:               grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap:                   1.5rem;
+    }
+
+    @media (max-width: 1024px) {
+      .hero-right { display: none; }
+      .app-banner { grid-template-columns: 1fr; }
+      .app-phones { display: none; }
+    }
+    @media (max-width: 768px) {
+      .hero-content { padding: 6rem 0 4rem; }
+      .hero-stats { gap: 1.5rem; }
+      .rewards-section, .app-banner { padding: 2rem; }
+    }
+  </style>
+</head>
+<body class="scanlines">
+
+<!-- ── NAVBAR ─────────────────────────────────────────────── -->
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo">NOM<span>A</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="active">Home</a></li>
+    <li><a href="menu.html">Restaurants</a></li>
+    <li><a href="cart.html">Cart</a></li>
+    <li><a href="orders.html">My Orders</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="cart-btn" onclick="window.location.href='cart.html'">
+      🛒 Cart <div class="cart-badge" id="cart-count">0</div>
+    </button>
+    <button class="btn btn-cyan" id="btn-open-auth">Sign In</button>
+    <div class="user-menu" id="user-menu" style="display:none;">
+      <button class="btn btn-ghost">
+        👤 <span id="user-name-nav"></span>
+      </button>
+      <div class="user-menu-dropdown">
+        <div class="user-menu-item">
+          ⭐ <span id="user-points-nav"></span> points
+        </div>
+        <div class="user-menu-item"
+          onclick="window.location.href='orders.html'">
+          📦 My Orders
+        </div>
+        <div class="user-menu-item danger" id="btn-logout">
+          🚪 Sign Out
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ── HERO ───────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-bg" id="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-grid"></div>
+
+  <div class="container" style="position:relative; z-index:2; width:100%;">
+    <div class="hero-content">
+      <div class="hero-eyebrow">
+        <div class="live-dot"></div>
+        300+ Restaurants · Live Now
+      </div>
+
+      <h1 class="hero-title">
+        Extraordinary<br>
+        <span class="line2">Food Delivered</span><br>
+        <span class="line3">To Your Door.</span>
+      </h1>
+
+      <p class="hero-sub">
+        NOMA curates the finest dining experiences in your city.
+        Real restaurants, real chefs, real food — delivered fast.
+      </p>
+
+      <!-- Smart Search -->
+      <div class="hero-search">
+        <span style="font-size:1.1rem;">🔍</span>
+        <input type="text" id="search-input"
+          placeholder="Search for a restaurant or dish..." />
+        <div class="search-divider"></div>
+        <select id="cuisine-select">
+          <option value="">All Cuisines</option>
+          <option value="Japanese">Japanese</option>
+          <option value="Steakhouse">Steakhouse</option>
+          <option value="Vegan">Vegan</option>
+          <option value="Italian">Italian</option>
+        </select>
+        <button class="btn btn-cyan" id="search-btn"
+          style="border-radius:var(--radius-pill); padding:0.6rem 1.5rem;">
+          Search
+        </button>
+      </div>
+
+      <!-- Mood Chips -->
+      <div class="mood-row">
+        <div class="mood-chip active" data-mood="">🍽️ All</div>
+        <div class="mood-chip" data-mood="Japanese">🍜 Japanese</div>
+        <div class="mood-chip" data-mood="Steakhouse">🥩 Steakhouse</div>
+        <div class="mood-chip" data-mood="Vegan">🥗 Vegan</div>
+        <div class="mood-chip" data-mood="Italian">🍕 Italian</div>
+        <div class="mood-chip" data-mood="">⚡ Quick</div>
+      </div>
+
+      <!-- Stats -->
+      <div class="hero-stats">
+        <div class="h-stat">
+          <div class="h-stat-num">
+            <span id="c-rest">0</span><sup>+</sup>
+          </div>
+          <div class="h-stat-label">Restaurants</div>
+        </div>
+        <div class="h-stat">
+          <div class="h-stat-num">
+            <span id="c-dish">0</span><sup>k</sup>
+          </div>
+          <div class="h-stat-label">Dishes</div>
+        </div>
+        <div class="h-stat">
+          <div class="h-stat-num">
+            <span id="c-time">0</span><sup>min</sup>
+          </div>
+          <div class="h-stat-label">Avg Delivery</div>
+        </div>
+        <div class="h-stat">
+          <div class="h-stat-num">
+            <span id="c-cities">0</span><sup>+</sup>
+          </div>
+          <div class="h-stat-label">Cities</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating image stack -->
+  <div class="hero-right">
+    <div class="img-stack">
+      <div class="img-stack-card isc-tl">
+        <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80"
+             alt="Fresh salad" />
+      </div>
+      <div class="img-stack-card isc-main">
+        <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&q=80"
+             alt="Gourmet burger" />
+      </div>
+      <div class="img-stack-card isc-br">
+        <img src="https://images.unsplash.com/photo-1574484284002-952d92456975?w=400&q=80"
+             alt="Sushi" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ────────────────────────────────────────── -->
+<section class="section" style="background: var(--bg2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div style="text-align:center; margin-bottom:3.5rem;">
+      <div class="section-label" style="justify-content:center;">How It Works</div>
+      <h2 class="section-title">
+        Order in <em>3 simple steps</em>
+      </h2>
+    </div>
+    <div class="grid-3">
+      <div class="how-step">
+        <div class="step-num">Step 01</div>
+        <div class="step-icon">🔍</div>
+        <div class="step-title">Browse & Discover</div>
+        <div class="step-desc">
+          Explore hundreds of restaurants filtered by cuisine,
+          mood, budget, or delivery speed. Find exactly what
+          you're craving in seconds.
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="step-num">Step 02</div>
+        <div class="step-icon">🛒</div>
+        <div class="step-title">Build Your Order</div>
+        <div class="step-desc">
+          Add dishes to your cart, customize your selections,
+          and review your order before checkout. No hidden fees,
+          ever.
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="step-num">Step 03</div>
+        <div class="step-icon">🛵</div>
+        <div class="step-title">Fast Delivery</div>
+        <div class="step-desc">
+          Track your order in real time as our riders bring
+          your food fresh to your door. Average delivery time
+          under 30 minutes.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURED RESTAURANTS ────────────────────────────────── -->
+<section class="section">
+  <div class="container">
+    <div class="flex-between mb-3">
+      <div>
+        <div class="section-label">Top Picks</div>
+        <h2 class="section-title">Featured <em>Restaurants</em></h2>
+      </div>
+      <a href="menu.html" class="btn btn-outline-cyan">
+        View All →
+      </a>
+    </div>
+    <div id="restaurants-grid">
+      <div class="skeleton" style="height:320px; border-radius:16px;"></div>
+      <div class="skeleton" style="height:320px; border-radius:16px;"></div>
+      <div class="skeleton" style="height:320px; border-radius:16px;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── POPULAR DISHES ──────────────────────────────────────── -->
+<section class="section" style="background:var(--bg2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div class="flex-between mb-3">
+      <div>
+        <div class="section-label">Trending Now</div>
+        <h2 class="section-title">Popular <em>Dishes</em></h2>
+      </div>
+    </div>
+    <div class="dishes-scroll">
+      <div class="dish-card" onclick="window.location.href='menu.html?restaurant=1'">
+        <div class="dish-card-img">
+          <img src="https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=400&q=80"
+               alt="Tonkotsu Ramen" />
+        </div>
+        <div class="dish-card-body">
+          <div class="dish-name">Tonkotsu Ramen</div>
+          <div class="dish-rest">Sakura Ramen Co.</div>
+          <div class="dish-price">$12.99</div>
+        </div>
+      </div>
+      <div class="dish-card" onclick="window.location.href='menu.html?restaurant=2'">
+        <div class="dish-card-img">
+          <img src="https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400&q=80"
+               alt="Wagyu Ribeye" />
+        </div>
+        <div class="dish-card-body">
+          <div class="dish-name">Wagyu Ribeye</div>
+          <div class="dish-rest">The Ember & Stone</div>
+          <div class="dish-price">$45.99</div>
+        </div>
+      </div>
+      <div class="dish-card" onclick="window.location.href='menu.html?restaurant=4'">
+        <div class="dish-card-img">
+          <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&q=80"
+               alt="Margherita Pizza" />
+        </div>
+        <div class="dish-card-body">
+          <div class="dish-name">Margherita Pizza</div>
+          <div class="dish-rest">Napoli House</div>
+          <div class="dish-price">$14.99</div>
+        </div>
+      </div>
+      <div class="dish-card" onclick="window.location.href='menu.html?restaurant=3'">
+        <div class="dish-card-img">
+          <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&q=80"
+               alt="Buddha Bowl" />
+        </div>
+        <div class="dish-card-body">
+          <div class="dish-name">Buddha Bowl</div>
+          <div class="dish-rest">Garden Theory</div>
+          <div class="dish-price">$13.99</div>
+        </div>
+      </div>
+      <div class="dish-card" onclick="window.location.href='menu.html?restaurant=1'">
+        <div class="dish-card-img">
+          <img src="https://images.unsplash.com/photo-1534482421-64566f976cfa?w=400&q=80"
+               alt="Gyoza" />
+        </div>
+        <div class="dish-card-body">
+          <div class="dish-name">Gyoza (6pcs)</div>
+          <div class="dish-rest">Sakura Ramen Co.</div>
+          <div class="dish-price">$6.99</div>
+        </div>
+      </div>
+      <div class="dish-card" onclick="window.location.href='menu.html?restaurant=3'">
+        <div class="dish-card-img">
+          <img src="https://images.unsplash.com/photo-1541519227354-08fa5d50c820?w=400&q=80"
+               alt="Avocado Toast" />
+        </div>
+        <div class="dish-card-body">
+          <div class="dish-name">Avocado Toast</div>
+          <div class="dish-rest">Garden Theory</div>
+          <div class="dish-price">$9.99</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── WHY NOMA ────────────────────────────────────────────── -->
+<section class="section">
+  <div class="container">
+    <div style="text-align:center; margin-bottom:3.5rem;">
+      <div class="section-label" style="justify-content:center;">Why NOMA</div>
+      <h2 class="section-title">Built different.<br><em>Delivers different.</em></h2>
+      <p class="section-sub" style="margin:0.75rem auto 0;">
+        We obsess over every detail so your food arrives
+        perfect, every single time.
+      </p>
+    </div>
+    <div class="grid-3">
+      <div class="feature-card">
+        <span class="feature-icon">⚡</span>
+        <div class="feature-title">Lightning Fast</div>
+        <div class="feature-desc">
+          Our optimized rider network means your food arrives
+          in under 30 minutes on average. We don't make you wait.
+        </div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🌡️</span>
+        <div class="feature-title">Always Fresh</div>
+        <div class="feature-desc">
+          Insulated packaging and smart routing keep your food
+          at the perfect temperature from kitchen to door.
+        </div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">💳</span>
+        <div class="feature-title">Zero Hidden Fees</div>
+        <div class="feature-desc">
+          What you see is what you pay. No surprise charges
+          at checkout. Free delivery on your first 3 orders.
+        </div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🎯</span>
+        <div class="feature-title">Smart Recommendations</div>
+        <div class="feature-desc">
+          NOMA learns your taste over time and surfaces
+          restaurants and dishes you'll actually love.
+        </div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🔐</span>
+        <div class="feature-title">Secure Payments</div>
+        <div class="feature-desc">
+          Bank-level encryption on every transaction.
+          Your payment data is never stored on our servers.
+        </div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🎁</span>
+        <div class="feature-title">Rewards Program</div>
+        <div class="feature-desc">
+          Earn points on every order. Unlock free meals,
+          exclusive discounts, and VIP restaurant access.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── REWARDS ─────────────────────────────────────────────── -->
+<section class="section" style="background:var(--bg2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div class="rewards-section">
+      <div style="text-align:center; margin-bottom:3rem; position:relative; z-index:1;">
+        <div class="section-label" style="justify-content:center;">Loyalty Program</div>
+        <h2 class="section-title">Eat more. <em>Earn more.</em></h2>
+        <p class="section-sub" style="margin: 0.75rem auto 0;">
+          Every dollar you spend earns you points toward
+          free meals, exclusive perks, and VIP status.
+        </p>
+      </div>
+      <div class="grid-4" style="position:relative; z-index:1;">
+        <div class="reward-tier">
+          <div class="tier-icon">🥉</div>
+          <div class="tier-name">Bronze</div>
+          <div class="tier-pts">0 pts</div>
+          <div class="tier-perks">Free delivery on weekends · 1× points multiplier</div>
+        </div>
+        <div class="reward-tier" style="border-color:rgba(192,192,192,0.3);">
+          <div class="tier-icon">🥈</div>
+          <div class="tier-name">Silver</div>
+          <div class="tier-pts">500 pts</div>
+          <div class="tier-perks">Free delivery daily · 1.5× multiplier · Priority support</div>
+        </div>
+        <div class="reward-tier" style="border-color:rgba(255,190,11,0.3); box-shadow: 0 0 20px var(--amber-glow);">
+          <div class="tier-icon">🥇</div>
+          <div class="tier-name">Gold</div>
+          <div class="tier-pts">1000 pts</div>
+          <div class="tier-perks">Free delivery · 2× multiplier · Early access · Free dessert monthly</div>
+        </div>
+        <div class="reward-tier" style="border-color:var(--border-cyan); box-shadow: 0 0 20px var(--cyan-glow);">
+          <div class="tier-icon">💎</div>
+          <div class="tier-name">Diamond</div>
+          <div class="tier-pts">2500 pts</div>
+          <div class="tier-perks">All Gold perks · 3× multiplier · Exclusive chef tables · Free meals</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TESTIMONIALS ────────────────────────────────────────── -->
+<section class="section">
+  <div class="container">
+    <div style="text-align:center; margin-bottom:3.5rem;">
+      <div class="section-label" style="justify-content:center;">Reviews</div>
+      <h2 class="section-title">People <em>love</em> NOMA</h2>
+    </div>
+    <div class="grid-3">
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-text">
+          "Honestly the best food delivery app I've ever used.
+          The food always arrives hot and the UI is just beautiful.
+          I've deleted every other app."
+        </div>
+        <div class="testi-author">
+          <div class="testi-avatar">
+            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80"
+                 alt="Sarah K." />
+          </div>
+          <div>
+            <div class="testi-name">Sarah K.</div>
+            <div class="testi-loc">Nairobi, KE</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-text">
+          "The rewards program is insane. I'm already at Gold tier
+          and I've gotten two free meals this month. NOMA actually
+          treats customers right."
+        </div>
+        <div class="testi-author">
+          <div class="testi-avatar">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80"
+                 alt="James M." />
+          </div>
+          <div>
+            <div class="testi-name">James M.</div>
+            <div class="testi-loc">Lagos, NG</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-text">
+          "Ordered Tonkotsu Ramen at midnight. It was at my door
+          in 22 minutes, piping hot. Sakura Ramen Co. is now my
+          favourite restaurant. NOMA made that happen."
+        </div>
+        <div class="testi-author">
+          <div class="testi-avatar">
+            <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100&q=80"
+                 alt="Amira T." />
+          </div>
+          <div>
+            <div class="testi-name">Amira T.</div>
+            <div class="testi-loc">Cairo, EG</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── APP BANNER ──────────────────────────────────────────── -->
+<section class="section-sm">
+  <div class="container">
+    <div class="app-banner">
+      <div>
+        <div class="section-label">Mobile App</div>
+        <h2 class="section-title">
+          Get the app.<br><em>Order anywhere.</em>
+        </h2>
+        <p>
+          Download NOMA on iOS or Android and get
+          <strong style="color:var(--magenta);">free delivery on your first 3 orders.</strong>
+        </p>
+        <div class="app-btns">
+          <div class="app-store-btn">
+            <div class="store-icon">🍎</div>
+            <div class="store-text">
+              <span class="store-label">Download on the</span>
+              <span class="store-name">App Store</span>
+            </div>
+          </div>
+          <div class="app-store-btn">
+            <div class="store-icon">▶️</div>
+            <div class="store-text">
+              <span class="store-label">Get it on</span>
+              <span class="store-name">Google Play</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="app-phones">
+        <div class="app-phone">
+          <img src="https://images.unsplash.com/photo-1555774698-0b77e0d5fac6?w=300&q=80"
+               alt="App screenshot" />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ──────────────────────────────────────────────── -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+
+      <!-- Brand -->
+      <div>
+        <div class="footer-logo">NOM<span>A</span></div>
+        <p class="footer-desc">
+          Extraordinary food experiences delivered to your door.
+          Curated restaurants, real chefs, zero compromise.
+        </p>
+        <div class="footer-socials">
+          <a class="social-btn" href="#" title="Twitter">𝕏</a>
+          <a class="social-btn" href="#" title="Instagram">📸</a>
+          <a class="social-btn" href="#" title="Facebook">f</a>
+          <a class="social-btn" href="#" title="TikTok">♪</a>
+        </div>
+        <div class="footer-newsletter">
+          <p>Get weekly deals straight to your inbox.</p>
+          <div class="newsletter-form">
+            <input type="email" placeholder="your@email.com"
+                   id="newsletter-input" />
+            <button class="btn btn-cyan"
+              style="padding:0.6rem 1rem; border-radius:var(--radius-pill);"
+              onclick="subscribeNewsletter()">
+              Join
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Explore -->
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="menu.html">All Restaurants</a></li>
+          <li><a href="menu.html?cuisine=Japanese">Japanese</a></li>
+          <li><a href="menu.html?cuisine=Italian">Italian</a></li>
+          <li><a href="menu.html?cuisine=Vegan">Vegan</a></li>
+          <li><a href="menu.html?cuisine=Steakhouse">Steakhouse</a></li>
+        </ul>
+      </div>
+
+      <!-- Account -->
+      <div class="footer-col">
+        <h4>Account</h4>
+        <ul>
+          <li><a href="#" onclick="openAuthModal()">Sign In</a></li>
+          <li><a href="#" onclick="openAuthModal()">Create Account</a></li>
+          <li><a href="orders.html">My Orders</a></li>
+          <li><a href="orders.html">Rewards</a></li>
+          <li><a href="cart.html">My Cart</a></li>
+        </ul>
+      </div>
+
+      <!-- Company -->
+     <div class="footer-col">
+  <h4>Company</h4>
+  <ul>
+    <li><a href="about.html">About NOMA</a></li>
+    <li><a href="about.html?section=partner">Partner With Us</a></li>
+    <li><a href="about.html?section=careers">Careers</a></li>
+    <li><a href="about.html?section=contact">Contact Us</a></li>
+    <li><a href="about.html?section=blog">Blog</a></li>
+  </ul>
+</div>
+
+    </div>
+
+    <!-- Footer bottom -->
+    <div class="footer-bottom">
+      <span>© 2026 NOMA Technologies Ltd. All rights reserved.</span>
+      <div style="display:flex; gap:1.5rem;">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Cookie Policy</a>
+      </div>
+      <span style="color:var(--cyan);">
+        Built with obsession. ✦
+      </span>
+    </div>
+  </div>
+</footer>
+
+<!-- ── AUTH MODAL ──────────────────────────────────────────── -->
+<div id="auth-modal"
+     style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85);
+            backdrop-filter:blur(12px); z-index:2000;
+            align-items:center; justify-content:center; padding:1rem;">
+  <div style="background:var(--bg2); border:1px solid var(--border-cyan);
+              border-radius:var(--radius-lg); padding:2.5rem; width:100%;
+              max-width:460px; position:relative; z-index:2001;
+              box-shadow:0 0 60px var(--cyan-glow), 0 40px 80px rgba(0,0,0,0.6);
+              animation:modalIn 0.4s var(--ease) both;">
+
+    <button onclick="closeAuthModal()"
+      style="position:absolute; top:1rem; right:1rem; background:none;
+             border:none; color:var(--text-sec); font-size:1.4rem;
+             cursor:pointer; line-height:1; padding:0.25rem; transition:color var(--trans);"
+      onmouseover="this.style.color='var(--magenta)'"
+      onmouseout="this.style.color='var(--text-sec)'">✕</button>
+
+    <div style="font-family:var(--font-display); font-size:2rem;
+                font-weight:900; margin-bottom:0.25rem;">
+      NOM<span style="color:var(--cyan); text-shadow:0 0 20px var(--cyan-glow);">A</span>
+    </div>
+    <div style="font-size:0.85rem; color:var(--text-sec); margin-bottom:2rem;">
+      Sign in or create your account to start ordering
+    </div>
+
+    <!-- Tabs -->
+    <div style="display:flex; background:var(--bg3); border:1px solid var(--border);
+                border-radius:var(--radius-sm); padding:0.3rem; margin-bottom:1.75rem;">
+      <div id="tab-login"
+        style="flex:1; text-align:center; padding:0.6rem; border-radius:calc(var(--radius-sm) - 2px);
+               font-size:0.85rem; font-weight:600; cursor:pointer;
+               background:var(--cyan); color:#000;
+               box-shadow:0 0 15px var(--cyan-glow); transition:all var(--trans);"
+        onclick="switchTab('login')">Sign In</div>
+      <div id="tab-signup"
+        style="flex:1; text-align:center; padding:0.6rem; border-radius:calc(var(--radius-sm) - 2px);
+               font-size:0.85rem; font-weight:600; cursor:pointer;
+               color:var(--text-sec); transition:all var(--trans);"
+        onclick="switchTab('signup')">Create Account</div>
+    </div>
+
+    <!-- Login Form -->
+    <div id="form-login">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" id="login-email"
+               placeholder="you@example.com" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" type="password" id="login-password"
+               placeholder="••••••••" />
+      </div>
+      <button class="btn btn-cyan" style="width:100%; justify-content:center;
+              padding:0.85rem; font-size:1rem; border-radius:var(--radius-sm);"
+        id="btn-login">
+        Sign In →
+      </button>
+      <p style="text-align:center; margin-top:1rem; font-size:0.8rem; color:var(--text-sec);">
+        Don't have an account?
+        <span style="color:var(--cyan); cursor:pointer;" onclick="switchTab('signup')">
+          Create one →
+        </span>
+      </p>
+    </div>
+
+    <!-- Signup Form -->
+    <div id="form-signup" style="display:none;">
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input class="form-input" type="text" id="signup-name"
+               placeholder="Your full name" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" id="signup-email"
+               placeholder="you@example.com" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" type="password" id="signup-password"
+               placeholder="Min 6 characters" />
+      </div>
+      <button class="btn btn-cyan" style="width:100%; justify-content:center;
+              padding:0.85rem; font-size:1rem; border-radius:var(--radius-sm);"
+        id="btn-signup">
+        Create Account →
+      </button>
+      <p style="text-align:center; margin-top:1rem; font-size:0.8rem; color:var(--text-sec);">
+        Already have an account?
+        <span style="color:var(--cyan); cursor:pointer;" onclick="switchTab('login')">
+          Sign in →
+        </span>
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── TOAST ───────────────────────────────────────────────── -->
+<div id="toast-container"></div>
+
+<script>
+const API   = 'http://localhost:5000/api';
+let token   = localStorage.getItem('noma_token');
+let user    = JSON.parse(localStorage.getItem('noma_user') || 'null');
+
+// ── AUTH MODAL ────────────────────────────────────────────
+function openAuthModal() {
+  const m = document.getElementById('auth-modal');
+  m.style.display = 'flex';
+}
+function closeAuthModal() {
+  const m = document.getElementById('auth-modal');
+  m.style.display = 'none';
+}
+
+// close on backdrop click
+document.getElementById('auth-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeAuthModal();
+});
+
+document.getElementById('btn-open-auth')
+  .addEventListener('click', openAuthModal);
+
+// ── AUTH TABS ─────────────────────────────────────────────
+function switchTab(tab) {
+  const isLogin = tab === 'login';
+
+  const tLogin  = document.getElementById('tab-login');
+  const tSignup = document.getElementById('tab-signup');
+  const fLogin  = document.getElementById('form-login');
+  const fSignup = document.getElementById('form-signup');
+
+  tLogin.style.background  = isLogin  ? 'var(--cyan)' : 'none';
+  tLogin.style.color        = isLogin  ? '#000'        : 'var(--text-sec)';
+  tLogin.style.boxShadow    = isLogin  ? '0 0 15px var(--cyan-glow)' : 'none';
+  tSignup.style.background  = !isLogin ? 'var(--cyan)' : 'none';
+  tSignup.style.color       = !isLogin ? '#000'        : 'var(--text-sec)';
+  tSignup.style.boxShadow   = !isLogin ? '0 0 15px var(--cyan-glow)' : 'none';
+
+  fLogin.style.display  = isLogin  ? 'block' : 'none';
+  fSignup.style.display = !isLogin ? 'block' : 'none';
+}
+
+// ── LOGIN ─────────────────────────────────────────────────
+document.getElementById('btn-login').addEventListener('click', async () => {
+  const email    = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const btn      = document.getElementById('btn-login');
+
+  if (!email || !password)
+    return showToast('⚠️', 'Missing fields', 'Enter your email and password', 'error');
+
+  btn.textContent = 'Signing in...';
+  btn.disabled    = true;
+
+  try {
+    const res  = await fetch(`${API}/auth/login`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      showToast('❌', 'Login failed', data.error, 'error');
+      btn.textContent = 'Sign In →';
+      btn.disabled    = false;
+      return;
+    }
+
+    token = data.token; user = data.user;
+    localStorage.setItem('noma_token', token);
+    localStorage.setItem('noma_user', JSON.stringify(user));
+
+    closeAuthModal();
+    updateNav();
+    updateCartCount();
+    showToast('👋', `Welcome back, ${user.name.split(' ')[0]}!`, 'You are now signed in');
+
+  } catch {
+    showToast('❌', 'Error', 'Could not connect to server', 'error');
+    btn.textContent = 'Sign In →';
+    btn.disabled    = false;
+  }
+});
+
+// ── SIGNUP ────────────────────────────────────────────────
+document.getElementById('btn-signup').addEventListener('click', async () => {
+  const name     = document.getElementById('signup-name').value.trim();
+  const email    = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+  const btn      = document.getElementById('btn-signup');
+
+  if (!name || !email || !password)
+    return showToast('⚠️', 'Missing fields', 'Please fill all fields', 'error');
+
+  btn.textContent = 'Creating account...';
+  btn.disabled    = true;
+
+  try {
+    const res  = await fetch(`${API}/auth/signup`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ name, email, password })
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      showToast('❌', 'Signup failed', data.error, 'error');
+      btn.textContent = 'Create Account →';
+      btn.disabled    = false;
+      return;
+    }
+
+    token = data.token; user = data.user;
+    localStorage.setItem('noma_token', token);
+    localStorage.setItem('noma_user', JSON.stringify(user));
+
+    closeAuthModal();
+    updateNav();
+    showToast('🎉', `Welcome to NOMA, ${user.name.split(' ')[0]}!`, 'Your account is ready');
+
+  } catch {
+    showToast('❌', 'Error', 'Could not connect to server', 'error');
+    btn.textContent = 'Create Account →';
+    btn.disabled    = false;
+  }
+});
+
+// ── LOGOUT ────────────────────────────────────────────────
+document.getElementById('btn-logout').addEventListener('click', () => {
+  token = null; user = null;
+  localStorage.removeItem('noma_token');
+  localStorage.removeItem('noma_user');
+  updateNav();
+  document.getElementById('cart-count').textContent = 0;
+  showToast('👋', 'Signed out', 'See you soon!');
+});
+
+// ── UPDATE NAV ────────────────────────────────────────────
+function updateNav() {
+  const btnAuth  = document.getElementById('btn-open-auth');
+  const userMenu = document.getElementById('user-menu');
+
+  if (user) {
+    btnAuth.style.display  = 'none';
+    userMenu.style.display = 'block';
+    document.getElementById('user-name-nav').textContent   = user.name.split(' ')[0];
+    document.getElementById('user-points-nav').textContent = user.points;
+  } else {
+    btnAuth.style.display  = 'inline-flex';
+    userMenu.style.display = 'none';
+  }
+}
+
+// ── CART COUNT ────────────────────────────────────────────
+async function updateCartCount() {
+  if (!token) return;
+  try {
+    const res  = await fetch(`${API}/cart`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    document.getElementById('cart-count').textContent = data.item_count || 0;
+  } catch {}
+}
+
+// ── LOAD RESTAURANTS ──────────────────────────────────────
+const REST_IMAGES = {
+  1: 'https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=600&q=80',
+  2: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=600&q=80',
+  3: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&q=80',
+  4: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=80'
+};
+
+async function loadRestaurants(cuisine = '', search = '') {
+  const grid = document.getElementById('restaurants-grid');
+  grid.innerHTML = `
+    <div class="skeleton" style="height:320px; border-radius:16px;"></div>
+    <div class="skeleton" style="height:320px; border-radius:16px;"></div>
+    <div class="skeleton" style="height:320px; border-radius:16px;"></div>`;
+
+  let url = `${API}/menu/restaurants?`;
+  if (cuisine) url += `cuisine=${encodeURIComponent(cuisine)}&`;
+  if (search)  url += `search=${encodeURIComponent(search)}`;
+
+  try {
+    const res  = await fetch(url);
+    const data = await res.json();
+
+    if (!data.restaurants.length) {
+      grid.innerHTML = `
+        <div class="empty-state" style="grid-column:1/-1;">
+          <div class="empty-icon">🍽️</div>
+          <h3>No restaurants found</h3>
+          <p>Try a different search or cuisine filter</p>
+        </div>`;
+      return;
+    }
+
+    grid.innerHTML = data.restaurants.map(r => `
+      <div class="neon-card rest-card"
+           onclick="window.location.href='menu.html?restaurant=${r.id}'">
+        <div class="rest-card-img">
+          <img src="${REST_IMAGES[r.id] || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80'}"
+               alt="${r.name}" loading="lazy" />
+          <div class="rest-card-img-overlay"></div>
+          ${r.rating >= 4.9
+            ? '<div class="badge badge-cyan">⭐ Top Rated</div>'
+            : r.id === 3
+            ? '<div class="badge badge-magenta">🌿 Healthy</div>'
+            : ''}
+        </div>
+        <div class="rest-card-body">
+          <div class="rest-card-title">${r.name}</div>
+          <div class="rest-meta">
+            <span class="rating">★ ${r.rating}</span>
+            <span>⏱ ${r.delivery_time}</span>
+            <span>Min $${r.min_order}</span>
+          </div>
+          <div class="rest-tags">
+            <div class="tag">${r.cuisine}</div>
+            <div class="tag open">● Open Now</div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+  } catch {
+    grid.innerHTML = `
+      <div class="empty-state" style="grid-column:1/-1;">
+        <div class="empty-icon">⚠️</div>
+        <h3>Could not load restaurants</h3>
+      </div>`;
+  }
+}
+
+// ── MOOD + SEARCH ─────────────────────────────────────────
+document.querySelectorAll('.mood-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.mood-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    loadRestaurants(chip.dataset.mood, document.getElementById('search-input').value);
+  });
+});
+
+document.getElementById('search-btn').addEventListener('click', () => {
+  const q  = document.getElementById('search-input').value.trim();
+  const c  = document.getElementById('cuisine-select').value;
+  loadRestaurants(c, q);
+});
+
+document.getElementById('search-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('search-btn').click();
+});
+
+// ── COUNT UP ──────────────────────────────────────────────
+function countUp(id, target, duration = 1800) {
+  const el = document.getElementById(id);
+  let start = null;
+  function step(ts) {
+    if (!start) start = ts;
+    const p = Math.min((ts - start) / duration, 1);
+    el.textContent = Math.round((1 - Math.pow(1 - p, 3)) * target);
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+// ── NEWSLETTER ────────────────────────────────────────────
+function subscribeNewsletter() {
+  const val = document.getElementById('newsletter-input').value.trim();
+  if (!val || !val.includes('@'))
+    return showToast('⚠️', 'Invalid email', 'Enter a valid email address', 'error');
+  showToast('📧', 'Subscribed!', 'Welcome to the NOMA newsletter', 'success');
+  document.getElementById('newsletter-input').value = '';
+}
+
+// ── NAVBAR SCROLL ─────────────────────────────────────────
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar')
+    .classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// ── HERO BG PARALLAX LOAD ─────────────────────────────────
+window.addEventListener('load', () => {
+  document.getElementById('hero-bg').classList.add('loaded');
+});
+
+// ── TOAST ─────────────────────────────────────────────────
+function showToast(icon, title, sub, type = '') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `
+    <div class="toast-icon">${icon}</div>
+    <div>
+      <div class="toast-title">${title}</div>
+      <div class="toast-sub">${sub}</div>
+    </div>`;
+  c.appendChild(t);
+  setTimeout(() => {
+    t.style.animation = 'toastOut 0.3s forwards';
+    setTimeout(() => t.remove(), 300);
+  }, 3500);
+}
+
+// ── INIT ──────────────────────────────────────────────────
+updateNav();
+updateCartCount();
+loadRestaurants();
+
+setTimeout(() => {
+  countUp('c-rest',   300);
+  countUp('c-dish',    12);
+  countUp('c-time',    28);
+  countUp('c-cities',  15);
+}, 500);
+</script>
+</body>
+</html>

@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NOMA – About Us</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <style>
+    .page-hero {
+      background:    var(--bg2);
+      border-bottom: 1px solid var(--border-cyan);
+      padding:       7rem 0 3rem;
+      position:      relative;
+      overflow:      hidden;
+    }
+    .page-hero::before {
+      content:    '';
+      position:   absolute;
+      inset:      0;
+      background-image:
+        linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .page-hero::after {
+      content:    '';
+      position:   absolute;
+      top: -100px; right: -100px;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(0,245,255,0.06), transparent 70%);
+      pointer-events: none;
+    }
+    .page-hero-content { position: relative; z-index: 1; }
+    .page-hero h1 {
+      font-family:    var(--font-display);
+      font-size:      clamp(2.5rem, 5vw, 4rem);
+      font-weight:    900;
+      letter-spacing: -0.03em;
+      margin-bottom:  0.5rem;
+    }
+    .page-hero h1 em {
+      font-style:  italic;
+      color:       var(--cyan);
+      text-shadow: 0 0 30px var(--cyan-glow);
+    }
+    .page-hero p { color: var(--text-sec); font-size: 1rem; }
+
+    /* section nav tabs */
+    .section-tabs {
+      display:       flex;
+      gap:           0.5rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 3rem;
+      overflow-x:    auto;
+      scrollbar-width: none;
+    }
+    .section-tabs::-webkit-scrollbar { display: none; }
+    .sec-tab {
+      padding:        0.75rem 1.5rem;
+      font-size:      0.85rem;
+      font-weight:    600;
+      color:          var(--text-sec);
+      cursor:         pointer;
+      border-bottom:  2px solid transparent;
+      transition:     all var(--trans);
+      white-space:    nowrap;
+      font-family:    var(--font-body);
+    }
+    .sec-tab:hover { color: var(--cyan); }
+    .sec-tab.active {
+      color:        var(--cyan);
+      border-color: var(--cyan);
+      text-shadow:  0 0 10px var(--cyan-glow);
+    }
+
+    /* content sections */
+    .content-section { display: none; padding-bottom: 6rem; }
+    .content-section.active { display: block; }
+
+    /* about section */
+    .about-hero-img {
+      width:         100%;
+      height:        400px;
+      object-fit:    cover;
+      border-radius: var(--radius-lg);
+      border:        1px solid var(--border-cyan);
+      box-shadow:    0 0 50px var(--cyan-glow);
+      margin-bottom: 3rem;
+    }
+    .about-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+      margin-bottom: 4rem;
+    }
+    .about-text h2 {
+      font-family:    var(--font-display);
+      font-size:      2rem;
+      font-weight:    900;
+      letter-spacing: -0.02em;
+      margin-bottom:  1rem;
+    }
+    .about-text h2 em { font-style: italic; color: var(--cyan); text-shadow: 0 0 20px var(--cyan-glow); }
+    .about-text p {
+      color:         var(--text-sec);
+      font-size:     0.95rem;
+      line-height:   1.9;
+      margin-bottom: 1rem;
+    }
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .about-stat {
+      background:    var(--bg2);
+      border:        1px solid var(--border-cyan);
+      border-radius: var(--radius);
+      padding:       1.5rem;
+      text-align:    center;
+      box-shadow:    0 0 20px rgba(0,245,255,0.06);
+    }
+    .about-stat .val {
+      font-family:   var(--font-mono);
+      font-size:     2rem;
+      font-weight:   700;
+      color:         var(--cyan);
+      text-shadow:   0 0 15px var(--cyan-glow);
+      display:       block;
+    }
+    .about-stat .lbl {
+      font-size:   0.75rem;
+      color:       var(--text-sec);
+      margin-top:  0.3rem;
+      font-family: var(--font-mono);
+    }
+
+    /* team */
+    .team-grid {
+      display:               grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap:                   1.5rem;
+      margin-top:            2rem;
+    }
+    .team-card {
+      background:    var(--bg2);
+      border:        1px solid var(--border);
+      border-radius: var(--radius);
+      overflow:      hidden;
+      transition:    all var(--trans);
+      text-align:    center;
+    }
+    .team-card:hover {
+      border-color: var(--border-cyan);
+      transform:    translateY(-4px);
+      box-shadow:   0 0 25px var(--cyan-glow);
+    }
+    .team-card img {
+      width:      100%;
+      height:     200px;
+      object-fit: cover;
+      filter:     grayscale(20%);
+      transition: filter var(--trans);
+    }
+    .team-card:hover img { filter: grayscale(0%); }
+    .team-info { padding: 1.25rem; }
+    .team-name { font-weight: 700; font-size: 1rem; margin-bottom: 0.2rem; }
+    .team-role { font-size: 0.75rem; color: var(--cyan); font-family: var(--font-mono); }
+
+    /* contact section */
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+    .contact-info h2 {
+      font-family:    var(--font-display);
+      font-size:      2rem;
+      font-weight:    900;
+      margin-bottom:  1rem;
+    }
+    .contact-info h2 em { font-style: italic; color: var(--cyan); text-shadow: 0 0 20px var(--cyan-glow); }
+    .contact-info p {
+      color:         var(--text-sec);
+      font-size:     0.9rem;
+      line-height:   1.8;
+      margin-bottom: 2rem;
+    }
+    .contact-item {
+      display:       flex;
+      align-items:   center;
+      gap:           1rem;
+      padding:       1rem;
+      background:    var(--bg2);
+      border:        1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 0.75rem;
+      transition:    all var(--trans);
+    }
+    .contact-item:hover {
+      border-color: var(--border-cyan);
+      box-shadow:   0 0 15px rgba(0,245,255,0.08);
+    }
+    .contact-item-icon {
+      width:         44px; height: 44px;
+      border-radius: 50%;
+      background:    var(--cyan-dim);
+      border:        1px solid var(--border-cyan);
+      display:       flex;
+      align-items:   center;
+      justify-content: center;
+      font-size:     1.1rem;
+      flex-shrink:   0;
+    }
+    .contact-item-info .ci-label {
+      font-size:   0.7rem;
+      color:       var(--text-dim);
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .contact-item-info .ci-value {
+      font-size:   0.9rem;
+      color:       var(--text);
+      font-weight: 500;
+      margin-top:  0.1rem;
+    }
+
+    /* contact form */
+    .contact-form {
+      background:    var(--bg2);
+      border:        1px solid var(--border-cyan);
+      border-radius: var(--radius-lg);
+      padding:       2rem;
+      box-shadow:    0 0 30px rgba(0,245,255,0.06);
+    }
+    .contact-form h3 {
+      font-family:   var(--font-display);
+      font-size:     1.3rem;
+      font-weight:   700;
+      margin-bottom: 1.5rem;
+      color:         var(--cyan);
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    textarea.form-input {
+      min-height: 120px;
+      resize:     vertical;
+    }
+
+    /* careers */
+    .careers-hero {
+      background:    var(--bg2);
+      border:        1px solid var(--border-cyan);
+      border-radius: var(--radius-lg);
+      padding:       3rem;
+      text-align:    center;
+      margin-bottom: 3rem;
+      position:      relative;
+      overflow:      hidden;
+    }
+    .careers-hero::before {
+      content:    '';
+      position:   absolute;
+      inset:      0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(0,245,255,0.06), transparent 60%);
+    }
+    .careers-hero h2 {
+      font-family:    var(--font-display);
+      font-size:      2.5rem;
+      font-weight:    900;
+      position:       relative;
+      margin-bottom:  0.75rem;
+    }
+    .careers-hero h2 em { font-style: italic; color: var(--cyan); text-shadow: 0 0 20px var(--cyan-glow); }
+    .careers-hero p { color: var(--text-sec); max-width: 500px; margin: 0 auto 1.5rem; position: relative; }
+
+    .job-card {
+      background:    var(--bg2);
+      border:        1px solid var(--border);
+      border-radius: var(--radius);
+      padding:       1.5rem;
+      margin-bottom: 1rem;
+      display:       flex;
+      align-items:   center;
+      gap:           1.5rem;
+      transition:    all var(--trans);
+      cursor:        pointer;
+    }
+    .job-card:hover {
+      border-color: var(--border-cyan);
+      transform:    translateX(4px);
+      box-shadow:   0 0 20px rgba(0,245,255,0.08);
+    }
+    .job-icon {
+      font-size:     1.8rem;
+      width:         56px; height: 56px;
+      background:    var(--bg3);
+      border:        1px solid var(--border);
+      border-radius: var(--radius-sm);
+      display:       flex;
+      align-items:   center;
+      justify-content: center;
+      flex-shrink:   0;
+      transition:    all var(--trans);
+    }
+    .job-card:hover .job-icon {
+      border-color: var(--border-cyan);
+      box-shadow:   0 0 15px var(--cyan-glow);
+    }
+    .job-info { flex: 1; }
+    .job-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; }
+    .job-meta  {
+      font-size:   0.75rem;
+      color:       var(--text-sec);
+      font-family: var(--font-mono);
+      display:     flex;
+      gap:         1rem;
+    }
+    .job-type {
+      background:    var(--cyan-dim);
+      border:        1px solid var(--border-cyan);
+      border-radius: var(--radius-pill);
+      padding:       0.25rem 0.75rem;
+      font-size:     0.68rem;
+      color:         var(--cyan);
+      font-family:   var(--font-mono);
+      white-space:   nowrap;
+    }
+
+    /* partner */
+    .partner-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+    .partner-benefits {
+      display:        flex;
+      flex-direction: column;
+      gap:            1rem;
+      margin:         1.5rem 0;
+    }
+    .benefit-item {
+      display:     flex;
+      align-items: center;
+      gap:         1rem;
+      padding:     1rem;
+      background:  var(--bg2);
+      border:      1px solid var(--border);
+      border-radius: var(--radius-sm);
+      transition:  all var(--trans);
+    }
+    .benefit-item:hover {
+      border-color: var(--border-cyan);
+      box-shadow:   0 0 15px rgba(0,245,255,0.06);
+    }
+    .benefit-icon {
+      font-size:   1.5rem;
+      width:       44px; height: 44px;
+      background:  var(--bg3);
+      border-radius: var(--radius-sm);
+      display:     flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .benefit-text h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.2rem; }
+    .benefit-text p  { font-size: 0.78rem; color: var(--text-sec); }
+
+    /* blog */
+    .blog-grid {
+      display:               grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap:                   1.5rem;
+    }
+    .blog-card {
+      background:    var(--bg2);
+      border:        1px solid var(--border);
+      border-radius: var(--radius);
+      overflow:      hidden;
+      transition:    all var(--trans);
+      cursor:        pointer;
+    }
+    .blog-card:hover {
+      border-color: var(--border-cyan);
+      transform:    translateY(-4px);
+      box-shadow:   0 0 25px var(--cyan-glow);
+    }
+    .blog-card-img {
+      height:   200px;
+      overflow: hidden;
+    }
+    .blog-card-img img {
+      width:      100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s var(--ease);
+    }
+    .blog-card:hover .blog-card-img img { transform: scale(1.06); }
+    .blog-card-body { padding: 1.25rem; }
+    .blog-tag {
+      font-family:    var(--font-mono);
+      font-size:      0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color:          var(--cyan);
+      margin-bottom:  0.5rem;
+    }
+    .blog-title {
+      font-family:   var(--font-display);
+      font-size:     1.1rem;
+      font-weight:   700;
+      margin-bottom: 0.5rem;
+      line-height:   1.3;
+    }
+    .blog-excerpt {
+      font-size:     0.82rem;
+      color:         var(--text-sec);
+      line-height:   1.7;
+      margin-bottom: 1rem;
+    }
+    .blog-meta {
+      font-size:   0.72rem;
+      color:       var(--text-dim);
+      font-family: var(--font-mono);
+      display:     flex;
+      justify-content: space-between;
+    }
+
+    @media (max-width: 768px) {
+      .about-body, .contact-layout,
+      .partner-layout { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .about-stats { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body class="scanlines">
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo">NOM<span>A</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="menu.html">Restaurants</a></li>
+    <li><a href="cart.html">Cart</a></li>
+    <li><a href="orders.html">My Orders</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="cart-btn" onclick="window.location.href='cart.html'">
+      🛒 Cart <div class="cart-badge" id="cart-count">0</div>
+    </button>
+    <button class="btn btn-cyan" id="btn-auth"
+      onclick="window.location.href='index.html'">
+      Sign In
+    </button>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="container page-hero-content">
+    <div class="section-label">Company</div>
+    <h1>About <em>NOMA</em></h1>
+    <p>Learn about us, get in touch, join our team, or partner with us</p>
+  </div>
+</div>
+
+<div class="page">
+  <div class="container">
+
+    <!-- SECTION TABS -->
+    <div class="section-tabs">
+      <div class="sec-tab active" onclick="showSection('about')">About Us</div>
+      <div class="sec-tab" onclick="showSection('contact')">Contact</div>
+      <div class="sec-tab" onclick="showSection('careers')">Careers</div>
+      <div class="sec-tab" onclick="showSection('partner')">Partner With Us</div>
+      <div class="sec-tab" onclick="showSection('blog')">Blog</div>
+    </div>
+
+    <!-- ── ABOUT ──────────────────────────────────────── -->
+    <div class="content-section active" id="sec-about">
+      <img class="about-hero-img"
+           src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1400&q=80"
+           alt="NOMA team" />
+
+      <div class="about-body">
+        <div class="about-text">
+          <div class="section-label">Our Story</div>
+          <h2>We built NOMA because <em>food deserves better.</em></h2>
+          <p>
+            NOMA was founded in 2023 by a group of food lovers who were
+            tired of cold deliveries, hidden fees, and apps that felt like
+            they were designed by people who'd never actually ordered food.
+          </p>
+          <p>
+            We set out to build something different — a platform that treats
+            every order like it matters. Because it does. Whether you're
+            ordering a late-night ramen or a special birthday dinner, NOMA
+            makes sure it arrives perfect.
+          </p>
+          <p>
+            Today we serve over 15 cities across Africa, connecting thousands
+            of restaurants with millions of hungry customers — and we're
+            just getting started.
+          </p>
+          <a href="#" onclick="showSection('careers')"
+             class="btn btn-cyan" style="margin-top:1rem;">
+            Join Our Team →
+          </a>
+        </div>
+
+        <div class="about-stats">
+          <div class="about-stat">
+            <span class="val">300+</span>
+            <span class="lbl">Restaurants</span>
+          </div>
+          <div class="about-stat">
+            <span class="val">15+</span>
+            <span class="lbl">Cities</span>
+          </div>
+          <div class="about-stat">
+            <span class="val">2M+</span>
+            <span class="lbl">Orders Delivered</span>
+          </div>
+          <div class="about-stat">
+            <span class="val">4.9★</span>
+            <span class="lbl">Avg Rating</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Team -->
+      <div class="section-label">The Team</div>
+      <h2 style="font-family:var(--font-display); font-size:2rem;
+                 font-weight:900; margin-bottom:0.5rem;">
+        People behind <em style="font-style:italic; color:var(--cyan);
+        text-shadow:0 0 20px var(--cyan-glow);">NOMA</em>
+      </h2>
+      <p style="color:var(--text-sec); margin-bottom:1rem;">
+        A diverse team united by one obsession — extraordinary food delivery.
+      </p>
+      <div class="team-grid">
+        <div class="team-card">
+          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80"
+               alt="CEO" />
+          <div class="team-info">
+            <div class="team-name">James Mwangi</div>
+            <div class="team-role">Co-Founder & CEO</div>
+          </div>
+        </div>
+        <div class="team-card">
+          <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80"
+               alt="CTO" />
+          <div class="team-info">
+            <div class="team-name">Sarah Okonkwo</div>
+            <div class="team-role">Co-Founder & CTO</div>
+          </div>
+        </div>
+        <div class="team-card">
+          <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&q=80"
+               alt="Design" />
+          <div class="team-info">
+            <div class="team-name">Amira Hassan</div>
+            <div class="team-role">Head of Design</div>
+          </div>
+        </div>
+        <div class="team-card">
+          <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80"
+               alt="Operations" />
+          <div class="team-info">
+            <div class="team-name">David Kimani</div>
+            <div class="team-role">Head of Operations</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CONTACT ─────────────────────────────────────── -->
+    <div class="content-section" id="sec-contact">
+      <div class="contact-layout">
+        <div class="contact-info">
+          <div class="section-label">Get In Touch</div>
+          <h2>We'd love to <em>hear from you.</em></h2>
+          <p>
+            Whether you have a question about your order, want to partner
+            with us, or just want to say hello — our team is here for you
+            24 hours a day, 7 days a week.
+          </p>
+
+          <div class="contact-item">
+            <div class="contact-item-icon">📧</div>
+            <div class="contact-item-info">
+              <div class="ci-label">Email</div>
+              <div class="ci-value">hello@noma.food</div>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon">📞</div>
+            <div class="contact-item-info">
+              <div class="ci-label">Phone</div>
+              <div class="ci-value">+254 700 000 000</div>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon">📍</div>
+            <div class="contact-item-info">
+              <div class="ci-label">Headquarters</div>
+              <div class="ci-value">Westlands, Nairobi, Kenya</div>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon">🕐</div>
+            <div class="contact-item-info">
+              <div class="ci-label">Support Hours</div>
+              <div class="ci-value">24 / 7 — Always online</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-form">
+          <h3>Send us a message</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">First Name</label>
+              <input class="form-input" type="text"
+                     id="contact-fname" placeholder="John" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last Name</label>
+              <input class="form-input" type="text"
+                     id="contact-lname" placeholder="Doe" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input class="form-input" type="email"
+                   id="contact-email" placeholder="you@example.com" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Subject</label>
+            <input class="form-input" type="text"
+                   id="contact-subject"
+                   placeholder="How can we help?" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Message</label>
+            <textarea class="form-input" id="contact-msg"
+              placeholder="Tell us more..."></textarea>
+          </div>
+          <button class="btn btn-cyan" style="width:100%;
+                  justify-content:center; padding:0.85rem;"
+            onclick="submitContact()">
+            Send Message →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CAREERS ─────────────────────────────────────── -->
+    <div class="content-section" id="sec-careers">
+      <div class="careers-hero">
+        <h2>Build the future of <em>food delivery.</em></h2>
+        <p>
+          Join a team of passionate people reimagining how the world eats.
+          We're growing fast and always looking for exceptional talent.
+        </p>
+        <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+          <div style="background:var(--bg3); border:1px solid var(--border);
+                      border-radius:var(--radius-pill); padding:0.5rem 1.25rem;
+                      font-size:0.8rem; color:var(--text-sec); font-family:var(--font-mono);">
+            🌍 Remote Friendly
+          </div>
+          <div style="background:var(--bg3); border:1px solid var(--border);
+                      border-radius:var(--radius-pill); padding:0.5rem 1.25rem;
+                      font-size:0.8rem; color:var(--text-sec); font-family:var(--font-mono);">
+            💰 Competitive Pay
+          </div>
+          <div style="background:var(--bg3); border:1px solid var(--border);
+                      border-radius:var(--radius-pill); padding:0.5rem 1.25rem;
+                      font-size:0.8rem; color:var(--text-sec); font-family:var(--font-mono);">
+            🍕 Free NOMA Credits
+          </div>
+          <div style="background:var(--bg3); border:1px solid var(--border);
+                      border-radius:var(--radius-pill); padding:0.5rem 1.25rem;
+                      font-size:0.8rem; color:var(--text-sec); font-family:var(--font-mono);">
+            📈 Equity Options
+          </div>
+        </div>
+      </div>
+
+      <div class="section-label">Open Positions</div>
+      <h2 style="font-family:var(--font-display); font-size:1.8rem;
+                 font-weight:900; margin-bottom:2rem;">
+        We're <em style="font-style:italic; color:var(--cyan);
+        text-shadow:0 0 20px var(--cyan-glow);">hiring</em>
+      </h2>
+
+      <div class="job-card" onclick="applyJob('Senior Full-Stack Engineer')">
+        <div class="job-icon">💻</div>
+        <div class="job-info">
+          <div class="job-title">Senior Full-Stack Engineer</div>
+          <div class="job-meta">
+            <span>Engineering</span>
+            <span>Nairobi / Remote</span>
+          </div>
+        </div>
+        <div class="job-type">Full-time</div>
+      </div>
+      <div class="job-card" onclick="applyJob('Product Designer')">
+        <div class="job-icon">🎨</div>
+        <div class="job-info">
+          <div class="job-title">Product Designer</div>
+          <div class="job-meta">
+            <span>Design</span>
+            <span>Nairobi / Remote</span>
+          </div>
+        </div>
+        <div class="job-type">Full-time</div>
+      </div>
+      <div class="job-card" onclick="applyJob('City Operations Manager')">
+        <div class="job-icon">🏙️</div>
+        <div class="job-info">
+          <div class="job-title">City Operations Manager</div>
+          <div class="job-meta">
+            <span>Operations</span>
+            <span>Lagos, NG</span>
+          </div>
+        </div>
+        <div class="job-type">Full-time</div>
+      </div>
+      <div class="job-card" onclick="applyJob('Delivery Partner')">
+        <div class="job-icon">🛵</div>
+        <div class="job-info">
+          <div class="job-title">Delivery Partner</div>
+          <div class="job-meta">
+            <span>Riders</span>
+            <span>Multiple Cities</span>
+          </div>
+        </div>
+        <div class="job-type">Flexible</div>
+      </div>
+      <div class="job-card" onclick="applyJob('Growth Marketing Lead')">
+        <div class="job-icon">📈</div>
+        <div class="job-info">
+          <div class="job-title">Growth Marketing Lead</div>
+          <div class="job-meta">
+            <span>Marketing</span>
+            <span>Remote</span>
+          </div>
+        </div>
+        <div class="job-type">Full-time</div>
+      </div>
+    </div>
+
+    <!-- ── PARTNER ─────────────────────────────────────── -->
+    <div class="content-section" id="sec-partner">
+      <div class="partner-layout">
+        <div>
+          <div class="section-label">For Restaurants</div>
+          <h2 style="font-family:var(--font-display); font-size:2rem;
+                     font-weight:900; margin-bottom:1rem;">
+            Grow your restaurant with <em style="font-style:italic;
+            color:var(--cyan); text-shadow:0 0 20px var(--cyan-glow);">NOMA.</em>
+          </h2>
+          <p style="color:var(--text-sec); font-size:0.9rem;
+                    line-height:1.8; margin-bottom:1.5rem;">
+            Join 300+ restaurants already earning more with NOMA.
+            We bring you customers, handle the delivery, and give you
+            the tools to grow your business.
+          </p>
+
+          <div class="partner-benefits">
+            <div class="benefit-item">
+              <div class="benefit-icon">📊</div>
+              <div class="benefit-text">
+                <h4>Real-Time Dashboard</h4>
+                <p>Track orders, revenue, and customer insights live</p>
+              </div>
+            </div>
+            <div class="benefit-item">
+              <div class="benefit-icon">🚀</div>
+              <div class="benefit-text">
+                <h4>Instant Onboarding</h4>
+                <p>Get listed and start receiving orders within 48 hours</p>
+              </div>
+            </div>
+            <div class="benefit-item">
+              <div class="benefit-icon">💳</div>
+              <div class="benefit-text">
+                <h4>Weekly Payouts</h4>
+                <p>Receive your earnings every week, no delays</p>
+              </div>
+            </div>
+            <div class="benefit-item">
+              <div class="benefit-icon">📣</div>
+              <div class="benefit-text">
+                <h4>Free Marketing</h4>
+                <p>We feature your restaurant to thousands of users</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-form">
+          <h3>Apply to Partner</h3>
+          <div class="form-group">
+            <label class="form-label">Restaurant Name</label>
+            <input class="form-input" type="text"
+                   id="partner-name" placeholder="Your Restaurant Name" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Owner Name</label>
+            <input class="form-input" type="text"
+                   id="partner-owner" placeholder="Full name" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input class="form-input" type="email"
+                   id="partner-email" placeholder="restaurant@email.com" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone</label>
+            <input class="form-input" type="tel"
+                   id="partner-phone" placeholder="+254 700 000 000" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">City</label>
+            <input class="form-input" type="text"
+                   id="partner-city" placeholder="Nairobi" />
+          </div>
+          <button class="btn btn-cyan" style="width:100%;
+                  justify-content:center; padding:0.85rem;"
+            onclick="submitPartner()">
+            Apply Now →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── BLOG ────────────────────────────────────────── -->
+    <div class="content-section" id="sec-blog">
+      <div class="section-label">Latest Posts</div>
+      <h2 style="font-family:var(--font-display); font-size:2rem;
+                 font-weight:900; margin-bottom:2rem;">
+        NOMA <em style="font-style:italic; color:var(--cyan);
+        text-shadow:0 0 20px var(--cyan-glow);">Stories</em>
+      </h2>
+
+      <div class="blog-grid">
+        <div class="blog-card">
+          <div class="blog-card-img">
+            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80"
+                 alt="Blog" />
+          </div>
+          <div class="blog-card-body">
+            <div class="blog-tag">Food Culture</div>
+            <div class="blog-title">
+              Why Ramen at Midnight Hits Different
+            </div>
+            <div class="blog-excerpt">
+              There's something magical about late-night food. We explore
+              why certain meals just taste better after dark, and the
+              restaurants that have mastered the art.
+            </div>
+            <div class="blog-meta">
+              <span>Apr 15, 2026</span>
+              <span>5 min read</span>
+            </div>
+          </div>
+        </div>
+        <div class="blog-card">
+          <div class="blog-card-img">
+            <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&q=80"
+                 alt="Blog" />
+          </div>
+          <div class="blog-card-body">
+            <div class="blog-tag">Behind The Scenes</div>
+            <div class="blog-title">
+              How We Keep Food Hot for 30 Minutes
+            </div>
+            <div class="blog-excerpt">
+              Our logistics team shares the technology and processes behind
+              NOMA's temperature guarantee — and why it's harder than it sounds.
+            </div>
+            <div class="blog-meta">
+              <span>Apr 10, 2026</span>
+              <span>7 min read</span>
+            </div>
+          </div>
+        </div>
+        <div class="blog-card">
+          <div class="blog-card-img">
+            <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&q=80"
+                 alt="Blog" />
+          </div>
+          <div class="blog-card-body">
+            <div class="blog-tag">Health & Wellness</div>
+            <div class="blog-title">
+              Eating Healthy Without Sacrificing Flavour
+            </div>
+            <div class="blog-excerpt">
+              Our nutritionist partner breaks down how to order smart
+              on NOMA — and the restaurants doing healthy food right,
+              without making it boring.
+            </div>
+            <div class="blog-meta">
+              <span>Apr 5, 2026</span>
+              <span>4 min read</span>
+            </div>
+          </div>
+        </div>
+        <div class="blog-card">
+          <div class="blog-card-img">
+            <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=80"
+                 alt="Blog" />
+          </div>
+          <div class="blog-card-body">
+            <div class="blog-tag">Restaurant Spotlight</div>
+            <div class="blog-title">
+              Napoli House: Bringing Naples to Nairobi
+            </div>
+            <div class="blog-excerpt">
+              We sit down with Chef Marco to talk authentic Italian pizza,
+              the secret behind his San Marzano sauce, and what it means
+              to bring real Neapolitan tradition to East Africa.
+            </div>
+            <div class="blog-meta">
+              <span>Mar 28, 2026</span>
+              <span>6 min read</span>
+            </div>
+          </div>
+        </div>
+        <div class="blog-card">
+          <div class="blog-card-img">
+            <img src="https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=600&q=80"
+                 alt="Blog" />
+          </div>
+          <div class="blog-card-body">
+            <div class="blog-tag">Product Update</div>
+            <div class="blog-title">
+              Introducing NOMA Rewards 2.0
+            </div>
+            <div class="blog-excerpt">
+              We've completely rebuilt our loyalty program from the ground up.
+              More points, better tiers, and exclusive perks you'll actually
+              want to use. Here's everything that's new.
+            </div>
+            <div class="blog-meta">
+              <span>Mar 20, 2026</span>
+              <span>3 min read</span>
+            </div>
+          </div>
+        </div>
+        <div class="blog-card">
+          <div class="blog-card-img">
+            <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80"
+                 alt="Blog" />
+          </div>
+          <div class="blog-card-body">
+            <div class="blog-tag">Company News</div>
+            <div class="blog-title">
+              NOMA Expands to 5 New Cities
+            </div>
+            <div class="blog-excerpt">
+              We're thrilled to announce our expansion into Lagos, Accra,
+              Cairo, Dar es Salaam, and Kampala. Here's what customers
+              in each city can expect from day one.
+            </div>
+            <div class="blog-meta">
+              <span>Mar 15, 2026</span>
+              <span>4 min read</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">NOM<span>A</span></div>
+        <p class="footer-desc">
+          Extraordinary food experiences delivered to your door.
+          Curated restaurants, real chefs, zero compromise.
+        </p>
+        <div class="footer-socials">
+          <a class="social-btn" href="#">𝕏</a>
+          <a class="social-btn" href="#">📸</a>
+          <a class="social-btn" href="#">f</a>
+          <a class="social-btn" href="#">♪</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="menu.html">All Restaurants</a></li>
+          <li><a href="menu.html?cuisine=Japanese">Japanese</a></li>
+          <li><a href="menu.html?cuisine=Italian">Italian</a></li>
+          <li><a href="menu.html?cuisine=Vegan">Vegan</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Account</h4>
+        <ul>
+          <li><a href="index.html">Sign In</a></li>
+          <li><a href="orders.html">My Orders</a></li>
+          <li><a href="cart.html">My Cart</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="about.html">About NOMA</a></li>
+          <li><a href="about.html?section=partner">Partner With Us</a></li>
+          <li><a href="about.html?section=careers">Careers</a></li>
+          <li><a href="about.html?section=contact">Contact Us</a></li>
+          <li><a href="about.html?section=blog">Blog</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 NOMA Technologies Ltd. All rights reserved.</span>
+      <div style="display:flex; gap:1.5rem;">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+      </div>
+      <span style="color:var(--cyan);">Built with obsession. ✦</span>
+    </div>
+  </div>
+</footer>
+
+<div id="toast-container"></div>
+
+<script>
+const token = localStorage.getItem('noma_token');
+const user  = JSON.parse(localStorage.getItem('noma_user') || 'null');
+
+if (user) {
+  document.getElementById('btn-auth').textContent = `👤 ${user.name.split(' ')[0]}`;
+  document.getElementById('btn-auth').onclick = () => window.location.href = 'orders.html';
+}
+
+// ── SECTION TABS ──────────────────────────────────────────
+function showSection(name) {
+  document.querySelectorAll('.content-section')
+    .forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.sec-tab')
+    .forEach(t => t.classList.remove('active'));
+
+  document.getElementById(`sec-${name}`).classList.add('active');
+  document.querySelectorAll('.sec-tab').forEach(t => {
+    if (t.textContent.toLowerCase().includes(
+        name === 'partner' ? 'partner' :
+        name === 'about'   ? 'about'   :
+        name === 'contact' ? 'contact' :
+        name === 'careers' ? 'career'  : 'blog')) {
+      t.classList.add('active');
+    }
+  });
+  window.scrollTo({ top: 200, behavior: 'smooth' });
+}
+
+// check URL param
+const params  = new URLSearchParams(window.location.search);
+const section = params.get('section');
+if (section) showSection(section);
+
+// ── CONTACT FORM ──────────────────────────────────────────
+function submitContact() {
+  const fname   = document.getElementById('contact-fname').value.trim();
+  const email   = document.getElementById('contact-email').value.trim();
+  const msg     = document.getElementById('contact-msg').value.trim();
+
+  if (!fname || !email || !msg) {
+    showToast('⚠️', 'Missing fields', 'Please fill all required fields', 'error');
+    return;
+  }
+  showToast('✅', 'Message sent!',
+    'We\'ll get back to you within 24 hours', 'success');
+  document.getElementById('contact-fname').value   = '';
+  document.getElementById('contact-lname').value   = '';
+  document.getElementById('contact-email').value   = '';
+  document.getElementById('contact-subject').value = '';
+  document.getElementById('contact-msg').value     = '';
+}
+
+// ── PARTNER FORM ──────────────────────────────────────────
+function submitPartner() {
+  const name  = document.getElementById('partner-name').value.trim();
+  const email = document.getElementById('partner-email').value.trim();
+
+  if (!name || !email) {
+    showToast('⚠️', 'Missing fields', 'Please fill all required fields', 'error');
+    return;
+  }
+  showToast('🎉', 'Application received!',
+    'Our partnerships team will contact you within 2 business days', 'success');
+  document.getElementById('partner-name').value  = '';
+  document.getElementById('partner-owner').value = '';
+  document.getElementById('partner-email').value = '';
+  document.getElementById('partner-phone').value = '';
+  document.getElementById('partner-city').value  = '';
+}
+
+// ── JOB APPLY ─────────────────────────────────────────────
+function applyJob(title) {
+  showToast('💼', `Applied for ${title}`,
+    'Check your email for next steps', 'success');
+}
+
+// ── NAVBAR SCROLL ─────────────────────────────────────────
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar')
+    .classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// ── TOAST ─────────────────────────────────────────────────
+function showToast(icon, title, sub, type = '') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `
+    <div class="toast-icon">${icon}</div>
+    <div>
+      <div class="toast-title">${title}</div>
+      <div class="toast-sub">${sub}</div>
+    </div>`;
+  c.appendChild(t);
+  setTimeout(() => {
+    t.style.animation = 'toastOut 0.3s forwards';
+    setTimeout(() => t.remove(), 300);
+  }, 4000);
+}
+</script>
+</body>
+</html>
